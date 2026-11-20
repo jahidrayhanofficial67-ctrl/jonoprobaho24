@@ -1436,9 +1436,8 @@
             ctx.fillText('সংবাদ', 175, 862);
 
             ctx.fillStyle = '#111827';
-            ctx.font = 'bold 42px "Hind Siliguri", sans-serif';
             ctx.textAlign = 'left';
-            wrapHeadlineText(ctx, news.title, 375, 810, W - 455, 54);
+            wrapHeadlineText(ctx, news.title, 375, 755, W - 445, 175);
 
             ctx.fillStyle = '#dc2626';
             ctx.beginPath();
@@ -1460,29 +1459,39 @@
             ctx.fillText(`প্রতিবেদক: ${news.reporter || 'নিজস্ব প্রতিবেদক'}`, 60, 988);
         }
 
-        function wrapHeadlineText(ctx, text, x, y, maxWidth, lineHeight) {
-            const words = text.split(' ');
-            let line = '';
+        function wrapHeadlineText(ctx, text, x, boxTopY, maxWidth, boxHeight) {
+            const words = text.trim().split(/\s+/);
+            let fontSize = 42;
             let lines = [];
+            let lineHeight = 52;
 
-            for (let n = 0; n < words.length; n++) {
-                const testLine = line + words[n] + ' ';
-                if (ctx.measureText(testLine).width > maxWidth && n > 0) {
-                    lines.push(line.trim());
-                    line = words[n] + ' ';
-                    if (lines.length === 2) break;
-                } else {
-                    line = testLine;
+            // শিরোনামের দৈর্ঘ্য অনুযায়ী স্বয়ংক্রিয়ভাবে ফন্ট সাইজ ঠিক করা যাতে একটি শব্দও না কাটে
+            while (fontSize >= 24) {
+                ctx.font = `bold ${fontSize}px "Hind Siliguri", sans-serif`;
+                lineHeight = Math.round(fontSize * 1.24);
+                lines = [];
+                let line = '';
+
+                for (let n = 0; n < words.length; n++) {
+                    const testLine = line ? line + ' ' + words[n] : words[n];
+                    if (ctx.measureText(testLine).width > maxWidth && line) {
+                        lines.push(line);
+                        line = words[n];
+                    } else {
+                        line = testLine;
+                    }
                 }
-            }
-            if (lines.length < 3 && line.trim()) {
-                lines.push(line.trim());
-            }
-            if (lines.length === 3 && words.join(' ').length > lines.join(' ').length) {
-                lines[2] = lines[2].slice(0, -3) + '...';
+                if (line) lines.push(line);
+
+                if (lines.length * lineHeight <= boxHeight) {
+                    break;
+                }
+                fontSize -= 2;
             }
 
-            const startY = lines.length === 1 ? y + 42 : (lines.length === 2 ? y + 18 : y - 5);
+            const totalTextHeight = lines.length * lineHeight;
+            const startY = boxTopY + (boxHeight - totalTextHeight) / 2 + fontSize * 0.82;
+
             lines.forEach((l, idx) => {
                 ctx.fillText(l, x, startY + idx * lineHeight);
             });
