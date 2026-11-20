@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>জনপ্রবাহ২৪ | সত্যের পথে জনতার পাশে</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Hind Siliguri for clean Bengali typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #f8f9fa;
+            color: #111827;
+        }
+        /* Breaking News Ticker Animation */
+        @keyframes ticker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-ticker {
+            display: inline-block;
+            white-space: nowrap;
+            animation: ticker 25s linear infinite;
+        }
+        .animate-ticker:hover {
+            animation-play-state: paused;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #dc2626;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Top Date & Social Bar -->
+    <div class="bg-black text-white text-xs sm:text-sm py-1.5 px-4 border-b border-red-600">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center space-x-3">
+                <span><i class="far fa-calendar-alt text-red-500 mr-1"></i> <span id="current-date">লোড হচ্ছে...</span></span>
+                <span class="hidden sm:inline text-gray-400">|</span>
+                <span class="hidden sm:inline text-gray-300">ঢাকা, বাংলাদেশ</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button onclick="openAdminModal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-0.5 rounded text-xs font-semibold transition flex items-center gap-1 shadow">
+                    <i class="fas fa-plus-circle"></i> নিউজ পোস্ট করুন (অ্যাডমিন)
+                </button>
+                <div class="hidden md:flex space-x-3 text-gray-300">
+                    <a href="#" class="hover:text-red-500 transition"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="hover:text-red-500 transition"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="hover:text-red-500 transition"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Header & Brand Logo -->
+    <header class="bg-white shadow-sm py-4 px-4 border-b-2 border-red-600 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <!-- Custom SVG Logo matching user's uploaded design -->
+            <a href="#" onclick="filterCategory('সর্বশেষ')" class="flex items-center gap-3 group">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-4 border-red-600 p-0.5 bg-white shadow-md flex items-center justify-center relative overflow-hidden">
+                    <div class="w-full h-full rounded-full border-2 border-black flex flex-col items-center justify-center bg-white">
+                        <span class="text-[7px] font-bold text-black leading-none tracking-tighter">সত্যের পথে জনতার পাশে</span>
+                        <div class="w-8 h-0.5 bg-red-600 my-0.5"></div>
+                        <span class="text-2xl sm:text-3xl font-black text-black leading-none -mt-1">জ</span>
+                        <span class="text-[8px] font-extrabold text-black leading-none">জনপ্রবাহ<span class="text-red-600">24</span></span>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-black">
+                        জনপ্রবাহ<span class="text-red-600">২৪</span>
+                    </h1>
+                    <p class="text-xs sm:text-sm font-semibold text-gray-600 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-red-600 inline-block"></span> সত্যের পথে জনতার পাশে
+                    </p>
+                </div>
+            </a>
+
+            <!-- Search Bar -->
+            <div class="w-full md:w-80 relative">
+                <input type="text" id="search-input" onkeyup="searchNews()" placeholder="খবর খুঁজুন..." 
+                    class="w-full pl-4 pr-10 py-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-red-600 text-sm transition">
+                <i class="fas fa-search absolute right-3.5 top-3 text-gray-400"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Category Navigation Menu -->
+    <nav class="bg-gray-900 text-white shadow-md overflow-x-auto">
+        <div class="max-w-7xl mx-auto px-4">
+            <ul class="flex space-x-1 sm:space-x-2 py-2 text-sm sm:text-base font-medium whitespace-nowrap" id="category-menu">
+                <li><button onclick="filterCategory('সর্বশেষ')" class="cat-btn active bg-red-600 text-white px-3 py-1.5 rounded transition">সর্বশেষ</button></li>
+                <li><button onclick="filterCategory('জাতীয়')" class="cat-btn hover:bg-red-600 px-3 py-1.5 rounded transition">জাতীয়</button></li>
+                <li><button onclick="filterCategory('রাজনীতি')" class="cat-btn hover:bg-red-600 px-3 py-1.5 rounded transition">রাজনীতি</button></li>
+                <li><button onclick="filterCategory('ইসলামী বিশ্ব')" class="cat-btn hover:bg-red-600 px-3 py-1.5 rounded transition">ইসলামী বিশ্ব</button></li>
+                <li><button onclick="filterCategory('সারাদেশ')" class="cat-btn hover:bg-red-600 px-3 py-1.5 rounded transition">সারাদেশ</button></li>
+                <li><button onclick="filterCategory('আন্তর্জাতিক')" class="cat-btn hover:bg-red-600 px-3 py-1.5 rounded transition">আন্তর্জাতিক</button></li>
+                <li><button onclick="filterCategory('অর্থনীতি')" class="cat-btn hover:bg-red-600 px-3 py-1.5 rounded transition">অর্থনীতি</button></li>
+                <li><button onclick="filterCategory('খেলাধুলা')" class="cat-btn hover:bg-red-600 px-3 py-1.5 rounded transition">খেলাধুলা</button></li>
+                <li><button onclick="filterCategory('তথ্যপ্রযুক্তি')" class="cat-btn hover:bg-red-600 px-3 py-1.5 rounded transition">তথ্যপ্রযুক্তি</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Breaking News Ticker -->
+    <div class="bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto flex items-center overflow-hidden">
+            <div class="bg-red-600 text-white font-bold px-3 sm:px-4 py-2 text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 z-10 shrink-0">
+                <span class="w-2 h-2 bg-white rounded-full animate-ping"></span> ব্রেকিং নিউজ
+            </div>
+            <div class="overflow-hidden w-full py-2 px-3 bg-red-50 text-red-900 font-semibold text-xs sm:text-sm">
+                <div class="animate-ticker" id="breaking-ticker-text">
+                    • জনপ্রবাহ২৪ ডট কমে আপনাকে স্বাগতম — সত্যের পথে জনতার পাশে • নতুন খবর প্রকাশ করতে উপরের "নিউজ পোস্ট করুন" বাটনে ক্লিক করুন • সারাদেশের সর্বশেষ সংবাদ সবার আগে পেতে সাথেই থাকুন।
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
+        
+        <!-- Loading State -->
+        <div id="loading-spinner" class="text-center py-12 hidden">
+            <i class="fas fa-circle-notch fa-spin text-4xl text-red-600"></i>
+            <p class="mt-2 text-gray-600 font-medium">সংবাদ লোড হচ্ছে...</p>
+        </div>
+
+        <!-- Current Category Title -->
+        <div class="flex items-center justify-between border-b-2 border-black pb-2 mb-6">
+            <h2 id="section-title" class="text-xl sm:text-2xl font-bold text-black flex items-center gap-2">
+                <span class="w-3 h-6 bg-red-600 inline-block rounded-sm"></span> সর্বশেষ সংবাদ
+            </h2>
+            <span id="news-count" class="text-xs sm:text-sm bg-gray-200 text-gray-800 px-2.5 py-1 rounded-full font-semibold">০ টি সংবাদ</span>
+        </div>
+
+        <!-- Lead News Section (Only visible on 'সর্বশেষ' when not searching) -->
+        <div id="lead-news-container" class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+            <!-- Dynamic Lead News will be injected here -->
+        </div>
+
+        <!-- Regular News Grid -->
+        <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamic News Cards will be injected here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden text-center py-16 bg-white rounded-xl shadow-sm border border-gray-200">
+            <i class="far fa-newspaper text-5xl text-gray-300 mb-3"></i>
+            <h3 class="text-xl font-bold text-gray-700">কোনো সংবাদ পাওয়া যায়নি</h3>
+            <p class="text-gray-500 text-sm mt-1">এই ক্যাটাগরিতে এখনো কোনো খবর প্রকাশ করা হয়নি।</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black text-gray-300 border-t-4 border-red-600 mt-12">
+        <div class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <h2 class="text-2xl font-extrabold text-white mb-2">জনপ্রবাহ<span class="text-red-600">২৪</span></h2>
+                <p class="text-sm text-gray-400 mb-4">সত্যের পথে জনতার পাশে — বস্তুনিষ্ঠ ও নিরপেক্ষ সংবাদ পরিবেশনে আমরা অঙ্গীকারবদ্ধ।</p>
+                <div class="flex space-x-3">
+                    <a href="#" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-red-600 flex items-center justify-center text-white transition"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-red-600 flex items-center justify-center text-white transition"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-red-600 flex items-center justify-center text-white transition"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white mb-3 border-b border-gray-800 pb-1">গুরুত্বপূর্ণ বিভাগ</h3>
+                <ul class="space-y-1.5 text-sm">
+                    <li><a href="#" onclick="filterCategory('জাতীয়')" class="hover:text-red-500 transition">• জাতীয় সংবাদ</a></li>
+                    <li><a href="#" onclick="filterCategory('রাজনীতি')" class="hover:text-red-500 transition">• রাজনীতি</a></li>
+                    <li><a href="#" onclick="filterCategory('ইসলামী বিশ্ব')" class="hover:text-red-500 transition">• ইসলামী বিশ্ব</a></li>
+                    <li><a href="#" onclick="filterCategory('সারাদেশ')" class="hover:text-red-500 transition">• সারাদেশের খবর</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white mb-3 border-b border-gray-800 pb-1">সম্পাদকীয় ও যোগাযোগ</h3>
+                <p class="text-sm text-gray-400">সম্পাদক ও প্রকাশক: <span class="text-white font-medium">জনপ্রবাহ২৪ কর্তৃপক্ষ</span></p>
+                <p class="text-sm text-gray-400 mt-1">বার্তা ও বাণিজ্যিক কার্যালয়: ঢাকা, বাংলাদেশ।</p>
+                <p class="text-sm text-gray-400 mt-1">ইমেইল: news@jonoprobaho24.com</p>
+            </div>
+        </div>
+        <div class="bg-gray-950 py-3 px-4 text-center text-xs text-gray-500 border-t border-gray-900">
+            © ২০২৬ জনপ্রবাহ২৪ (Jonoprobaho24.com) | সর্বস্বত্ব সংরক্ষিত।
+        </div>
+    </footer>
+
+    <!-- Read Full News Modal -->
+    <div id="read-modal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative animate-fadeIn">
+            <button onclick="closeReadModal()" class="sticky top-3 float-right mr-3 mt-3 bg-red-600 hover:bg-red-700 text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg z-10 transition">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="modal-news-content" class="p-6 sm:p-8">
+                <!-- Full news content injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Post News Modal -->
+    <div id="admin-modal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-xl max-w-xl w-full p-6 shadow-2xl relative">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-xl font-bold text-black flex items-center gap-2">
+                    <i class="fas fa-edit text-red-600"></i> নতুন সংবাদ প্রকাশ করুন
+                </h3>
+                <button onclick="closeAdminModal()" class="text-gray-500 hover:text-red-600 text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="post-news-form" onsubmit="handlePostNews(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">সংবাদের শিরোনাম *</label>
+                    <input type="text" id="news-title" required placeholder="আকর্ষণীয় শিরোনাম লিখুন..." 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">ক্যাটাগরি *</label>
+                        <select id="news-category" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600">
+                            <option value="জাতীয়">জাতীয়</option>
+                            <option value="রাজনীতি">রাজনীতি</option>
+                            <option value="ইসলামী বিশ্ব">ইসলামী বিশ্ব</option>
+                            <option value="সারাদেশ">সারাদেশ</option>
+                            <option value="আন্তর্জাতিক">আন্তর্জাতিক</option>
+                            <option value="অর্থনীতি">অর্থনীতি</option>
+                            <option value="খেলাধুলা">খেলাধুলা</option>
+                            <option value="তথ্যপ্রযুক্তি">তথ্যপ্রযুক্তি</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">প্রতিবেদক / স্থান</label>
+                        <input type="text" id="news-reporter" value="নিজস্ব প্রতিবেদক" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">ছবির লিংক (ঐচ্ছিক)</label>
+                    <input type="url" id="news-image" placeholder="https://example.com/photo.jpg (ফাঁকা রাখলে ডিফল্ট ছবি বসবে)" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600 text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">বিস্তারিত সংবাদ *</label>
+                    <textarea id="news-content" rows="5" required placeholder="সংবাদের বিস্তারিত বিবরণ লিখুন..." 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600"></textarea>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="news-breaking" class="w-4 h-4 text-red-600 rounded focus:ring-red-500">
+                    <label for="news-breaking" class="text-sm font-semibold text-red-600">ব্রেকিং নিউজ টিকারে দেখান</label>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2 border-t">
+                    <button type="button" onclick="closeAdminModal()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition">বাতিল</button>
+                    <button type="submit" id="submit-news-btn" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold shadow transition flex items-center gap-2">
+                        <i class="fas fa-paper-plane"></i> প্রকাশ করুন
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Photo Card Generator Modal -->
+    <div id="photocard-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-xl max-w-lg w-full p-5 shadow-2xl relative">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-lg font-bold text-black flex items-center gap-2">
+                    <i class="fas fa-image text-red-600"></i> সোশ্যাল মিডিয়া ফটো কার্ড
+                </h3>
+                <button onclick="closePhotoCardModal()" class="text-gray-500 hover:text-red-600 text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Canvas Preview Container -->
+            <div class="flex justify-center bg-gray-100 p-3 rounded-lg border border-gray-200 mb-4">
+                <canvas id="photocard-canvas" class="max-w-full h-auto rounded shadow-md" style="max-height: 420px;"></canvas>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                <p class="text-xs text-gray-500 text-center sm:text-left">ফেসবুক বা হোয়াটসঅ্যাপে শেয়ার করতে কার্ডটি ডাউনলোড করুন।</p>
+                <button onclick="downloadPhotoCard()" class="w-full sm:w-auto px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold shadow transition flex items-center justify-center gap-2">
+                    <i class="fas fa-download"></i> ডাউনলোড করুন
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-gray-900 text-white px-5 py-3 rounded-lg shadow-xl border-l-4 border-red-600 transform translate-y-24 opacity-0 transition-all duration-300 z-50 flex items-center gap-3">
+        <i class="fas fa-check-circle text-red-500 text-lg"></i>
+        <span id="toast-msg" class="text-sm font-medium">বার্তা</span>
+    </div>
+
+    <!-- Firebase & App Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Set Bengali Date
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('bn-BD', options);
+
+        // Initial Sample News (Shown if database is empty)
+        const sampleNews = [
+            {
+                id: 'sample-1',
+                title: 'জনপ্রবাহ২৪ ডট কমের আনুষ্ঠানিক যাত্রা শুরু: সত্যের পথে জনতার পাশে থাকার অঙ্গীকার',
+                category: 'জাতীয়',
+                reporter: 'নিজস্ব প্রতিবেদক, ঢাকা',
+                image: 'https://placehold.co/800x450/111827/ffffff?text=Jonoprobaho24+News',
+                content: 'সত্য ও বস্তুনিষ্ঠ সংবাদ পরিবেশনের অঙ্গীকার নিয়ে আনুষ্ঠানিকভাবে যাত্রা শুরু করলো অনলাইন নিউজ পোর্টাল জনপ্রবাহ২৪ (Jonoprobaho24.com)। দেশের আনাচে-কানাচে ঘটে যাওয়া সকল সংবাদ সবার আগে পাঠকদের কাছে পৌঁছে দিতে কাজ করবে এই পোর্টালটি। সম্পাদকীয় বোর্ডের পক্ষ থেকে জানানো হয়েছে, কোনো ধরনের গুজব বা পক্ষপাতিত্ব ছাড়াই জনগণের কথা তুলে ধরাই হবে জনপ্রবাহ২৪-এর মূল লক্ষ্য।',
+                isBreaking: true,
+                timestamp: Date.now()
+            },
+            {
+                id: 'sample-2',
+                title: 'দেশের অর্থনীতিতে নতুন গতি: রপ্তানি আয়ে ইতিবাচক প্রবৃদ্ধির ধারা অব্যাহত',
+                category: 'অর্থনীতি',
+                reporter: 'অর্থনৈতিক প্রতিবেদক',
+                image: 'https://placehold.co/800x450/dc2626/ffffff?text=Economy+Update',
+                content: 'চলতি অর্থবছরের সাম্প্রতিক পরিসংখ্যানে দেশের রপ্তানি আয়ে ইতিবাচক প্রবৃদ্ধি লক্ষ্য করা গেছে। বিশেষ করে তৈরি পোশাক, চামড়াজাত পণ্য এবং তথ্যপ্রযুক্তি খাতে বৈদেশিক মুদ্রা অর্জনের হার বেড়েছে। অর্থনীতিবিদরা মনে করছেন, সঠিক নীতি সহায়তা অব্যাহত থাকলে আগামী মাসগুলোতে এই ধারা আরও শক্তিশালী হবে।',
+                isBreaking: false,
+                timestamp: Date.now() - 3600000
+            },
+            {
+                id: 'sample-3',
+                title: 'তরুণ প্রজন্মের হাত ধরেই গড়ে উঠবে আগামীর সমৃদ্ধ বাংলাদেশ',
+                category: 'রাজনীতি',
+                reporter: 'বিশেষ প্রতিনিধি',
+                image: 'https://placehold.co/800x450/1f2937/ffffff?text=Youth+and+Nation',
+                content: 'দেশের সামাজিক ও রাজনৈতিক পরিবর্তনে তরুণ সমাজের ভূমিকা অনস্বীকার্য। নৈতিকতা, দেশপ্রেম এবং আধুনিক শিক্ষায় শিক্ষিত হয়ে তরুণরা এগিয়ে এলে যেকোনো সংকট মোকাবিলা করা সম্ভব বলে মন্তব্য করেছেন বিশিষ্ট চিন্তাবিদরা।',
+                isBreaking: false,
+                timestamp: Date.now() - 7200000
+            }
+        ];
+
+        let allNews = [];
+        let currentCategory = 'সর্বশেষ';
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'jonoprobaho24-portal';
+
+        // Initialize Firebase Cloud Storage (Free Tier)
+        async function initApp() {
+            try {
+                if (typeof __firebase_config !== 'undefined') {
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    const app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    onAuthStateChanged(auth, (user) => {
+                        currentUser = user;
+                        if (user) {
+                            listenToNews();
+                        }
+                    });
+                } else {
+                    // Fallback to in-memory if config not present
+                    allNews = [...sampleNews];
+                    renderNews();
+                }
+            } catch (error) {
+                console.error("Init error:", error);
+                allNews = [...sampleNews];
+                renderNews();
+            }
+        }
+
+        // Listen to Firestore Public News Collection
+        function listenToNews() {
+            if (!db || !currentUser) return;
+            document.getElementById('loading-spinner').classList.remove('hidden');
+
+            const newsCol = collection(db, 'artifacts', appId, 'public', 'data', 'news_articles');
+            onSnapshot(newsCol, (snapshot) => {
+                document.getElementById('loading-spinner').classList.add('hidden');
+                const fetchedNews = [];
+                snapshot.forEach((doc) => {
+                    fetchedNews.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Sort newest first in JS memory
+                fetchedNews.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                if (fetchedNews.length === 0) {
+                    allNews = [...sampleNews];
+                } else {
+                    allNews = fetchedNews;
+                }
+                updateBreakingTicker();
+                renderNews();
+            }, (error) => {
+                console.error("Snapshot error:", error);
+                document.getElementById('loading-spinner').classList.add('hidden');
+                allNews = [...sampleNews];
+                renderNews();
+            });
+        }
+
+        // Update Breaking News Ticker
+        function updateBreakingTicker() {
+            const breakingItems = allNews.filter(n => n.isBreaking);
+            const tickerEl = document.getElementById('breaking-ticker-text');
+            if (breakingItems.length > 0) {
+                tickerEl.innerHTML = breakingItems.map(item => `• ${item.title}`).join(' &nbsp;&nbsp;&nbsp;&nbsp; ');
+            }
+        }
+
+        // Render News to UI
+        window.renderNews = function() {
+            const searchQuery = document.getElementById('search-input').value.toLowerCase();
+            let filtered = allNews.filter(news => {
+                const matchesCat = currentCategory === 'সর্বশেষ' || news.category === currentCategory;
+                const matchesSearch = news.title.toLowerCase().includes(searchQuery) || news.content.toLowerCase().includes(searchQuery);
+                return matchesCat && matchesSearch;
+            });
+
+            document.getElementById('news-count').innerText = `${filtered.length} টি সংবাদ`;
+            const leadContainer = document.getElementById('lead-news-container');
+            const gridContainer = document.getElementById('news-grid');
+            const emptyState = document.getElementById('empty-state');
+
+            leadContainer.innerHTML = '';
+            gridContainer.innerHTML = '';
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            // Show Lead News Layout only on 'সর্বশেষ' and no search query
+            let gridItems = filtered;
+            if (currentCategory === 'সর্বশেষ' && !searchQuery && filtered.length > 0) {
+                const mainLead = filtered[0];
+                const sideLeads = filtered.slice(1, 4);
+                gridItems = filtered.slice(4);
+
+                let sideHtml = sideLeads.map(item => `
+                    <div onclick="openReadModal('${item.id}')" class="flex gap-3 bg-white p-3 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer group">
+                        <img src="${item.image}" onerror="this.src='https://placehold.co/300x200/111827/ffffff?text=Jonoprobaho24'" class="w-28 h-20 object-cover rounded-lg shrink-0">
+                        <div class="flex flex-col justify-between">
+                            <span class="text-[11px] font-bold text-red-600">${item.category}</span>
+                            <h4 class="text-sm font-bold text-gray-900 group-hover:text-red-600 transition line-clamp-2">${item.title}</h4>
+                            <span class="text-[11px] text-gray-400"><i class="far fa-clock"></i> ${formatTime(item.timestamp)}</span>
+                        </div>
+                    </div>
+                `).join('');
+
+                leadContainer.innerHTML = `
+                    <div onclick="openReadModal('${mainLead.id}')" class="lg:col-span-7 bg-white rounded-xl overflow-hidden shadow-md border border-gray-200 cursor-pointer group flex flex-col">
+                        <div class="relative overflow-hidden h-64 sm:h-80">
+                            <img src="${mainLead.image}" onerror="this.src='https://placehold.co/800x450/111827/ffffff?text=Jonoprobaho24'" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <span class="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded shadow">${mainLead.category}</span>
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-xl sm:text-2xl font-extrabold text-gray-900 group-hover:text-red-600 transition mb-2 leading-snug">${mainLead.title}</h3>
+                                <p class="text-gray-600 text-sm line-clamp-3">${mainLead.content}</p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center text-xs text-gray-500">
+                                <span><i class="fas fa-user-edit text-red-600 mr-1"></i> ${mainLead.reporter}</span>
+                                <span><i class="far fa-clock mr-1"></i> ${formatTime(mainLead.timestamp)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-5 flex flex-col justify-between gap-3">
+                        <div class="bg-black text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2">
+                            <span class="w-2 h-2 bg-red-600 rounded-full"></span> আলোচিত সংবাদ
+                        </div>
+                        ${sideHtml || '<p class="text-sm text-gray-500 p-4 bg-white rounded-xl">আরও খবর যোগ করুন...</p>'}
+                    </div>
+                `;
+            }
+
+            // Render Remaining Cards
+            gridItems.forEach(news => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-lg transition flex flex-col cursor-pointer group";
+                card.onclick = () => openReadModal(news.id);
+                card.innerHTML = `
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="${news.image}" onerror="this.src='https://placehold.co/600x400/111827/ffffff?text=Jonoprobaho24'" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        <span class="absolute top-2.5 left-2.5 bg-black bg-opacity-80 text-white text-xs font-semibold px-2.5 py-0.5 rounded border-l-2 border-red-600">${news.category}</span>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 group-hover:text-red-600 transition line-clamp-2 mb-2">${news.title}</h3>
+                            <p class="text-gray-600 text-xs sm:text-sm line-clamp-2">${news.content}</p>
+                        </div>
+                        <div class="mt-4 pt-2 border-t border-gray-100 flex justify-between items-center text-xs text-gray-500">
+                            <span>${news.reporter}</span>
+                            <span>${formatTime(news.timestamp)}</span>
+                        </div>
+                    </div>
+                `;
+                gridContainer.appendChild(card);
+            });
+        };
+
+        // Filter by Category
+        window.filterCategory = function(category) {
+            currentCategory = category;
+            document.getElementById('section-title').innerHTML = `<span class="w-3 h-6 bg-red-600 inline-block rounded-sm"></span> ${category} সংবাদ`;
+            
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if (btn.innerText === category) {
+                    btn.classList.add('bg-red-600', 'text-white');
+                } else {
+                    btn.classList.remove('bg-red-600', 'text-white');
+                }
+            });
+            renderNews();
+        };
+
+        // Search News
+        window.searchNews = function() {
+            renderNews();
+        };
+
+        // Post New Article
+        window.handlePostNews = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submit-news-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> প্রকাশ হচ্ছে...';
+
+            const title = document.getElementById('news-title').value.trim();
+            const category = document.getElementById('news-category').value;
+            const reporter = document.getElementById('news-reporter').value.trim() || 'নিজস্ব প্রতিবেদক';
+            const imageInput = document.getElementById('news-image').value.trim();
+            const content = document.getElementById('news-content').value.trim();
+            const isBreaking = document.getElementById('news-breaking').checked;
+
+            const newArticle = {
+                title,
+                category,
+                reporter,
+                image: imageInput || `https://placehold.co/800x450/111827/ffffff?text=${encodeURIComponent(category)}`,
+                content,
+                isBreaking,
+                timestamp: Date.now()
+            };
+
+            try {
+                if (db && currentUser) {
+                    const newsCol = collection(db, 'artifacts', appId, 'public', 'data', 'news_articles');
+                    await addDoc(newsCol, newArticle);
+                } else {
+                    newArticle.id = 'local-' + Date.now();
+                    allNews.unshift(newArticle);
+                    updateBreakingTicker();
+                    renderNews();
+                }
+
+                document.getElementById('post-news-form').reset();
+                closeAdminModal();
+                showToast('সংবাদটি সফলভাবে প্রকাশিত হয়েছে!');
+            } catch (error) {
+                console.error("Error adding news:", error);
+                showToast('সংবাদ প্রকাশ করতে সমস্যা হয়েছে!');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> প্রকাশ করুন';
+            }
+        };
+
+        // Delete News (For Admin management)
+        window.deleteArticle = async function(id) {
+            if (id.startsWith('sample-') || id.startsWith('local-')) {
+                allNews = allNews.filter(n => n.id !== id);
+                closeReadModal();
+                renderNews();
+                showToast('সংবাদটি মুছে ফেলা হয়েছে।');
+                return;
+            }
+            try {
+                if (db && currentUser) {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'news_articles', id));
+                    closeReadModal();
+                    showToast('সংবাদটি মুছে ফেলা হয়েছে।');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('মুছে ফেলতে সমস্যা হয়েছে।');
+            }
+        };
+
+        // Read Full News Modal
+        window.openReadModal = function(id) {
+            const news = allNews.find(n => n.id === id);
+            if (!news) return;
+
+            const modalContent = document.getElementById('modal-news-content');
+            modalContent.innerHTML = `
+                <span class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded">${news.category}</span>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-3 mb-3 leading-snug">${news.title}</h1>
+                <div class="flex flex-wrap items-center justify-between text-xs sm:text-sm text-gray-500 border-y py-2.5 mb-5 gap-2">
+                    <div><i class="fas fa-user-edit text-red-600 mr-1"></i> <strong>${news.reporter}</strong></div>
+                    <div><i class="far fa-clock mr-1"></i> ${formatTime(news.timestamp)}</div>
+                </div>
+                <img src="${news.image}" onerror="this.src='https://placehold.co/800x450/111827/ffffff?text=Jonoprobaho24'" class="w-full max-h-96 object-cover rounded-xl mb-6 shadow">
+                <div class="text-gray-800 text-base sm:text-lg leading-relaxed whitespace-pre-line mb-8">
+                    ${news.content}
+                </div>
+                <div class="border-t pt-4 flex flex-wrap justify-between items-center gap-3">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="generatePhotoCard('${news.id}')" class="bg-red-600 hover:bg-red-700 text-white px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold shadow transition flex items-center gap-1.5">
+                            <i class="fas fa-image"></i> ফটো কার্ড তৈরি করুন
+                        </button>
+                        <button onclick="copyNewsLink('${news.title.replace(/'/g, "\\'")}')" class="bg-gray-100 hover:bg-gray-800 hover:text-white text-gray-800 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1">
+                            <i class="fas fa-copy"></i> শিরোনাম কপি
+                        </button>
+                    </div>
+                    <button onclick="deleteArticle('${news.id}')" class="text-xs text-red-600 hover:underline flex items-center gap-1">
+                        <i class="fas fa-trash-alt"></i> সংবাদটি মুছুন
+                    </button>
+                </div>
+            `;
+            document.getElementById('read-modal').classList.remove('hidden');
+        };
+
+        window.closeReadModal = function() {
+            document.getElementById('read-modal').classList.add('hidden');
+        };
+
+        window.openAdminModal = function() {
+            document.getElementById('admin-modal').classList.remove('hidden');
+        };
+
+        window.closeAdminModal = function() {
+            document.getElementById('admin-modal').classList.add('hidden');
+        };
+
+        // Photo Card Generator Logic
+        window.generatePhotoCard = function(id) {
+            const news = allNews.find(n => n.id === id);
+            if (!news) return;
+
+            document.getElementById('photocard-modal').classList.remove('hidden');
+            const canvas = document.getElementById('photocard-canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set high-res square dimensions (1080x1080)
+            canvas.width = 1080;
+            canvas.height = 1080;
+
+            // 1. Background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, 1080, 1080);
+
+            // Top Red & Black Accent Bar
+            ctx.fillStyle = '#dc2626';
+            ctx.fillRect(0, 0, 1080, 24);
+            ctx.fillStyle = '#111827';
+            ctx.fillRect(0, 24, 1080, 10);
+
+            // 2. Draw News Image
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.onload = function() {
+                drawCardContent(ctx, news, img);
+            };
+            img.onerror = function() {
+                drawCardContent(ctx, news, null);
+            };
+            img.src = news.image;
+        };
+
+        function drawCardContent(ctx, news, img) {
+            // Image Area (y: 34 to 580)
+            if (img) {
+                // Cover fit calculation
+                const targetW = 1080;
+                const targetH = 550;
+                const scale = Math.max(targetW / img.width, targetH / img.height);
+                const x = (targetW / 2) - (img.width / 2) * scale;
+                const y = 34 + (targetH / 2) - (img.height / 2) * scale;
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(0, 34, targetW, targetH);
+                ctx.clip();
+                ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+                ctx.restore();
+            } else {
+                ctx.fillStyle = '#1f2937';
+                ctx.fillRect(0, 34, 1080, 550);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 48px "Hind Siliguri", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('জনপ্রবাহ২৪ সংবাদ', 540, 310);
+            }
+
+            // Category Badge overlapping image bottom-left
+            ctx.fillStyle = '#dc2626';
+            ctx.fillRect(50, 555, 220, 54);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 28px "Hind Siliguri", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(news.category, 160, 591);
+
+            // Date on right side
+            const dateStr = new Date(news.timestamp || Date.now()).toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' });
+            ctx.fillStyle = '#4b5563';
+            ctx.font = '600 26px "Hind Siliguri", sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText(dateStr, 1030, 592);
+
+            // 3. Headline Text Wrapping
+            ctx.fillStyle = '#111827';
+            ctx.font = 'bold 48px "Hind Siliguri", sans-serif';
+            ctx.textAlign = 'left';
+            wrapText(ctx, news.title, 50, 680, 980, 66);
+
+            // 4. Bottom Branding Footer (y: 920 to 1080)
+            ctx.fillStyle = '#111827';
+            ctx.fillRect(0, 920, 1080, 160);
+            ctx.fillStyle = '#dc2626';
+            ctx.fillRect(0, 920, 1080, 8);
+
+            // Circular Logo Badge on Bottom Left
+            ctx.beginPath();
+            ctx.arc(115, 1000, 52, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = '#dc2626';
+            ctx.stroke();
+
+            ctx.fillStyle = '#111827';
+            ctx.font = '900 54px "Hind Siliguri", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('জ', 115, 1018);
+
+            // Brand Name & Slogan
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 44px "Hind Siliguri", sans-serif';
+            ctx.fillText('জনপ্রবাহ', 190, 995);
+            
+            const textWidth = ctx.measureText('জনপ্রবাহ').width;
+            ctx.fillStyle = '#dc2626';
+            ctx.fillText('২৪', 190 + textWidth, 995);
+
+            ctx.fillStyle = '#d1d5db';
+            ctx.font = '500 24px "Hind Siliguri", sans-serif';
+            ctx.fillText('সত্যের পথে জনতার পাশে • jonoprobaho24.com', 190, 1035);
+
+            // Right side call to action
+            ctx.fillStyle = '#dc2626';
+            ctx.fillRect(790, 975, 240, 50);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 24px "Hind Siliguri", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('বিস্তারিত কমেন্টে', 910, 1008);
+        }
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let lineCount = 0;
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth && n > 0) {
+                    ctx.fillText(line, x, y);
+                    line = words[n] + ' ';
+                    y += lineHeight;
+                    lineCount++;
+                    if (lineCount >= 3) {
+                        line = line.trim() + '...';
+                        break;
+                    }
+                } else {
+                    line = testLine;
+                }
+            }
+            ctx.fillText(line, x, y);
+        }
+
+        window.closePhotoCardModal = function() {
+            document.getElementById('photocard-modal').classList.add('hidden');
+        };
+
+        window.downloadPhotoCard = function() {
+            const canvas = document.getElementById('photocard-canvas');
+            const link = document.createElement('a');
+            link.download = `Jonoprobaho24-Card-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showToast('ফটো কার্ড ডাউনলোড হয়েছে!');
+        };
+
+        // Copy to Clipboard
+        window.copyNewsLink = function(title) {
+            const textToCopy = `${title} - বিস্তারিত পড়ুন জনপ্রবাহ২৪-এ`;
+            const tempInput = document.createElement('textarea');
+            tempInput.value = textToCopy;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast('সংবাদের শিরোনাম কপি হয়েছে!');
+        };
+
+        // Format Relative Time in Bengali
+        function formatTime(timestamp) {
+            if (!timestamp) return 'এইমাত্র';
+            const diff = Math.floor((Date.now() - timestamp) / 60000);
+            if (diff < 1) return 'এইমাত্র';
+            if (diff < 60) return `${diff} মিনিট আগে`;
+            const hours = Math.floor(diff / 60);
+            if (hours < 24) return `${hours} ঘণ্টা আগে`;
+            return new Date(timestamp).toLocaleDateString('bn-BD');
+        }
+
+        // Toast Notification
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+
+        // Start App
+        initApp();
+    </script>
+</body>
+</html>
