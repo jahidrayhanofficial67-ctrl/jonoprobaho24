@@ -243,9 +243,12 @@
                 
                 <!-- Cloud Gallery Image Upload -->
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">গ্যালারি থেকে ছবি সিলেক্ট করুন (অটো-ক্লাউড আপলোড)</label>
-                    <input type="file" id="news-image-file" accept="image/*" onchange="previewSelectedImage(event)"
-                        class="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600 text-sm bg-gray-50 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">সংবাদের ছবি (গ্যালারি থেকে সিলেক্ট করুন)</label>
+                    <input type="file" id="news-image-file" accept="image/*" onchange="previewSelectedImage(event)" class="hidden">
+                    <button type="button" onclick="triggerGalleryPicker('news-image-file')" 
+                        class="w-full py-2.5 px-4 bg-gray-100 hover:bg-red-50 border-2 border-dashed border-red-400 rounded-lg text-sm font-bold text-red-600 flex items-center justify-center gap-2 transition cursor-pointer">
+                        <i class="fas fa-camera text-base"></i> গ্যালারি থেকে ছবি নির্বাচন করুন
+                    </button>
                     <p id="news-img-status" class="hidden text-xs font-bold mt-1"></p>
                     <div id="image-preview-box" class="hidden mt-2 relative bg-gray-900 rounded-lg overflow-hidden border">
                         <img id="image-preview-img" src="" class="h-44 w-full object-contain mx-auto">
@@ -297,8 +300,11 @@
                 <!-- Logo / Profile Photo Upload -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">পোর্টালের লোগো / প্রোফাইল ছবি পরিবর্তন করুন</label>
-                    <input type="file" id="settings-logo-file" accept="image/*" onchange="previewLogoImage(event)"
-                        class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-gray-50 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white cursor-pointer">
+                    <input type="file" id="settings-logo-file" accept="image/*" onchange="previewLogoImage(event)" class="hidden">
+                    <button type="button" onclick="triggerGalleryPicker('settings-logo-file')" 
+                        class="w-full py-2 px-4 bg-gray-100 hover:bg-gray-200 border border-dashed border-gray-500 rounded-lg text-xs font-bold text-gray-800 flex items-center justify-center gap-2 transition cursor-pointer">
+                        <i class="fas fa-image"></i> লোগো ছবি নির্বাচন করুন
+                    </button>
                     <div id="logo-preview-wrap" class="hidden mt-2 flex items-center gap-3">
                         <img id="logo-preview-img" src="" class="w-14 h-14 rounded-full object-cover border-2 border-red-600">
                         <button type="button" onclick="resetDefaultLogo()" class="text-xs text-red-600 underline">ডিফল্ট লোগো ফিরিয়ে আনুন</button>
@@ -395,11 +401,7 @@
     </div>
 
     <!-- Firebase & Application Logic -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, updateDoc, onSnapshot, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
+    <script>
         // আপনার নিজের Firebase Config ও ImgBB API Key (আগের অ্যাপ থেকে যুক্ত করা হয়েছে)
         const firebaseConfig = {
             apiKey: "AIzaSyAx5CAqZZIIzXLmP8TvzSwlOApYq4PE4wI",
@@ -422,7 +424,6 @@
             subAdmins: []
         };
 
-        // Persistent Login Session (একবার পাসওয়ার্ড দিলেই লগইন সেভ থাকবে)
         let savedAuthSession = null;
 
         function getActiveSession() {
@@ -444,13 +445,17 @@
 
         function saveAuthSession(sessionObj) {
             savedAuthSession = sessionObj;
-            localStorage.setItem('jonoprobaho24_auth_session', JSON.stringify(sessionObj));
+            try {
+                localStorage.setItem('jonoprobaho24_auth_session', JSON.stringify(sessionObj));
+            } catch (e) {}
             updateSessionUI();
         }
 
         window.logoutSession = function() {
             savedAuthSession = null;
-            localStorage.removeItem('jonoprobaho24_auth_session');
+            try {
+                localStorage.removeItem('jonoprobaho24_auth_session');
+            } catch (e) {}
             updateSessionUI();
             showToast('সফলভাবে লগআউট হয়েছে।');
         };
@@ -467,7 +472,6 @@
             }
         }
 
-        // Load Settings from LocalStorage initially
         function loadSettings() {
             try {
                 const saved = localStorage.getItem('jonoprobaho24_settings');
@@ -475,9 +479,7 @@
                     portalSettings = { ...portalSettings, ...JSON.parse(saved) };
                     if (!Array.isArray(portalSettings.subAdmins)) portalSettings.subAdmins = [];
                 }
-            } catch (e) {
-                console.error("Settings load error:", e);
-            }
+            } catch (e) {}
             applySettingsToUI();
             updateSessionUI();
         }
@@ -509,11 +511,9 @@
             }
         }
 
-        // Set Bengali Date
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('bn-BD', options);
 
-        // Initial Sample News
         const sampleNews = [
             {
                 id: 'sample-1',
@@ -532,6 +532,7 @@
         let db = null;
         let auth = null;
         let currentUser = null;
+        let fbOps = null;
 
         function loadLocalNews() {
             try {
@@ -550,16 +551,26 @@
             } catch (e) {}
         }
 
-        // Initialize Live Firebase Cloud
         async function initApp() {
             loadSettings();
-            try {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                await signInAnonymously(auth);
+            allNews = loadLocalNews();
+            updateBreakingTicker();
+            renderNews();
+            checkUrlHashForArticle();
 
-                onAuthStateChanged(auth, (user) => {
+            try {
+                const [appMod, authMod, fsMod] = await Promise.all([
+                    import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"),
+                    import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"),
+                    import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js")
+                ]);
+                fbOps = fsMod;
+                const app = appMod.initializeApp(firebaseConfig);
+                db = fsMod.getFirestore(app);
+                auth = authMod.getAuth(app);
+                await authMod.signInAnonymously(auth);
+
+                authMod.onAuthStateChanged(auth, (user) => {
                     currentUser = user;
                     if (user) {
                         document.getElementById('db-status-badge').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> লাইভ ক্লাউড`;
@@ -568,57 +579,44 @@
                     }
                 });
             } catch (error) {
-                console.error("Init error:", error);
-                document.getElementById('db-status-badge').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> অফলাইন মোড`;
-                allNews = loadLocalNews();
-                updateBreakingTicker();
-                renderNews();
-                checkUrlHashForArticle();
+                document.getElementById('db-status-badge').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> লোকাল প্রিভিউ`;
             }
         }
 
-        // Sync Portal Settings & Appointed Reporters across all devices via Cloud
         function listenToCloudSettings() {
-            if (!db || !currentUser) return;
-            const settingsDocRef = doc(db, 'jp24_settings', 'main_config');
-            onSnapshot(settingsDocRef, (snap) => {
+            if (!db || !currentUser || !fbOps) return;
+            const settingsDocRef = fbOps.doc(db, 'jp24_settings', 'main_config');
+            fbOps.onSnapshot(settingsDocRef, (snap) => {
                 if (snap.exists()) {
                     portalSettings = { ...portalSettings, ...snap.data() };
                     if (!Array.isArray(portalSettings.subAdmins)) portalSettings.subAdmins = [];
-                    localStorage.setItem('jonoprobaho24_settings', JSON.stringify(portalSettings));
+                    try { localStorage.setItem('jonoprobaho24_settings', JSON.stringify(portalSettings)); } catch(e) {}
                     applySettingsToUI();
                     updateSessionUI();
                     updateBreakingTicker();
                 }
-            }, (err) => console.error("Cloud settings sync error:", err));
+            });
         }
 
         function listenToNews() {
-            if (!db || !currentUser) return;
-            document.getElementById('loading-spinner').classList.remove('hidden');
-
-            const newsCol = collection(db, 'jp24_news_articles');
-            onSnapshot(newsCol, (snapshot) => {
-                document.getElementById('loading-spinner').classList.add('hidden');
+            if (!db || !currentUser || !fbOps) return;
+            const newsCol = fbOps.collection(db, 'jp24_news_articles');
+            fbOps.onSnapshot(newsCol, (snapshot) => {
                 const fetchedNews = [];
                 snapshot.forEach((docItem) => {
                     fetchedNews.push({ id: docItem.id, ...docItem.data() });
                 });
                 fetchedNews.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-                allNews = fetchedNews.length === 0 ? loadLocalNews() : fetchedNews;
-                updateBreakingTicker();
-                renderNews();
-                checkUrlHashForArticle();
-            }, () => {
-                document.getElementById('loading-spinner').classList.add('hidden');
-                allNews = loadLocalNews();
-                updateBreakingTicker();
-                renderNews();
+                if (fetchedNews.length > 0) {
+                    allNews = fetchedNews;
+                    updateBreakingTicker();
+                    renderNews();
+                    checkUrlHashForArticle();
+                }
             });
         }
 
-        // Deep Linking: Open Specific Article from Shared Link (#news=ID)
         function checkUrlHashForArticle() {
             const hash = window.location.hash;
             if (hash && hash.startsWith('#news=')) {
@@ -646,7 +644,6 @@
             }
         }
 
-        // Smart Image Container HTML
         function renderSmartImage(src, heightClass) {
             return `
                 <div class="relative ${heightClass} w-full bg-gray-900 overflow-hidden flex items-center justify-center">
@@ -656,7 +653,6 @@
             `;
         }
 
-        // Render News Grid
         window.renderNews = function() {
             const searchQuery = document.getElementById('search-input').value.toLowerCase();
             let filtered = allNews.filter(news => {
@@ -764,46 +760,76 @@
 
         window.searchNews = function() { renderNews(); };
 
-        // Cloud Image Upload via ImgBB (Fast & Unlimited for All Devices)
         let uploadedImageUrl = "";
 
+        window.triggerGalleryPicker = function(inputId) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            input.value = "";
+            input.click();
+        };
+
+        function compressImageFile(file, maxWidth = 1000) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width;
+                        let h = img.height;
+                        if (w > maxWidth) {
+                            h = Math.round((h * maxWidth) / w);
+                            w = maxWidth;
+                        }
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', 0.8));
+                    };
+                    img.onerror = function() {
+                        resolve(e.target.result);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
         window.previewSelectedImage = async function(event) {
-            const file = event.target.files[0];
+            const file = event.target.files && event.target.files[0];
             if (!file) return;
 
             const statusEl = document.getElementById('news-img-status');
-            const submitBtn = document.getElementById('submit-news-btn');
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('image-preview-img').src = e.target.result;
-                document.getElementById('image-preview-box').classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-
-            statusEl.innerText = 'ছবি ক্লাউডে আপলোড হচ্ছে...';
+            statusEl.innerText = 'ছবি প্রস্তুত হচ্ছে...';
             statusEl.className = 'text-xs font-bold mt-1 text-blue-600';
             statusEl.classList.remove('hidden');
-            submitBtn.disabled = true;
 
             try {
+                const compressedDataUrl = await compressImageFile(file, 1000);
+                uploadedImageUrl = compressedDataUrl;
+                document.getElementById('image-preview-img').src = compressedDataUrl;
+                document.getElementById('image-preview-box').classList.remove('hidden');
+                statusEl.innerText = 'ছবি সফলভাবে যুক্ত হয়েছে!';
+                statusEl.className = 'text-xs font-bold mt-1 text-green-600';
+
+                // Background upload to ImgBB for fast cloud delivery
                 const formData = new FormData();
                 formData.append('image', file);
-                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
-                const json = await res.json();
-                if (json.success) {
-                    uploadedImageUrl = json.data.url;
-                    statusEl.innerText = 'ছবি আপলোড সম্পন্ন হয়েছে!';
-                    statusEl.className = 'text-xs font-bold mt-1 text-green-600';
-                } else {
-                    throw new Error('Upload failed');
-                }
+                fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData })
+                    .then(r => r.json())
+                    .then(json => {
+                        if (json && json.success && json.data && json.data.url) {
+                            uploadedImageUrl = json.data.url;
+                            statusEl.innerText = 'ছবি ক্লাউডে আপলোড সম্পন্ন হয়েছে!';
+                        }
+                    })
+                    .catch(() => {});
             } catch (err) {
-                statusEl.innerText = 'ছবি আপলোড ব্যর্থ হয়েছে! আবার চেষ্টা করুন।';
+                statusEl.innerText = 'ছবি সিলেক্ট করতে সমস্যা হয়েছে!';
                 statusEl.className = 'text-xs font-bold mt-1 text-red-600';
-                showToast('ছবি আপলোড করতে সমস্যা হয়েছে!');
             }
-            submitBtn.disabled = false;
         };
 
         window.clearSelectedImage = function() {
@@ -813,7 +839,6 @@
             document.getElementById('news-img-status').classList.add('hidden');
         };
 
-        // Open Admin Modal (For New Post or Edit Post)
         window.openAdminModal = function(editId = null) {
             document.getElementById('post-news-form').reset();
             clearSelectedImage();
@@ -860,7 +885,6 @@
             document.getElementById('admin-modal').classList.remove('hidden');
         };
 
-        // Auto-detect Super Admin vs Appointed Sub-Admin/Reporter
         window.autoFillReporterName = function() {
             const pass = document.getElementById('admin-password').value.trim();
             const badge = document.getElementById('detected-role-badge');
@@ -887,7 +911,6 @@
             document.getElementById('admin-modal').classList.add('hidden');
         };
 
-        // Save New or Edited Article
         window.handlePostNews = async function(e) {
             e.preventDefault();
             let activeSession = getActiveSession();
@@ -905,11 +928,10 @@
                 matchedStaff = (portalSettings.subAdmins || []).find(s => s.pass === passInput);
 
                 if (!isSuperAdmin && !matchedStaff) {
-                    showToast('ভুল অ্যাডমিন বা প্রতিনিধি পাসওয়ার্ড!');
+                    showToast('ভুল অ্যাডমিন বা প্রতিনিধি পাসওয়ার্ড! (ডিফল্ট: 2424)');
                     return;
                 }
 
-                // Save session so user never needs to enter password again
                 if (isSuperAdmin) {
                     saveAuthSession({ role: 'super', pass: passInput });
                 } else {
@@ -947,8 +969,8 @@
 
             try {
                 if (editId) {
-                    if (db && currentUser && !editId.startsWith('sample-') && !editId.startsWith('local-')) {
-                        await updateDoc(doc(db, 'jp24_news_articles', editId), articleData);
+                    if (db && currentUser && fbOps && !editId.startsWith('sample-') && !editId.startsWith('local-')) {
+                        await fbOps.updateDoc(fbOps.doc(db, 'jp24_news_articles', editId), articleData);
                     } else {
                         const idx = allNews.findIndex(n => n.id === editId);
                         if (idx !== -1) {
@@ -961,9 +983,14 @@
                     closeReadModal();
                     showToast('সংবাদটি সফলভাবে আপডেট করা হয়েছে!');
                 } else {
-                    if (db && currentUser) {
-                        await addDoc(collection(db, 'jp24_news_articles'), articleData);
-                    } else {
+                    let savedToCloud = false;
+                    if (db && currentUser && fbOps) {
+                        try {
+                            await fbOps.addDoc(fbOps.collection(db, 'jp24_news_articles'), articleData);
+                            savedToCloud = true;
+                        } catch (cloudErr) {}
+                    }
+                    if (!savedToCloud) {
                         articleData.id = 'local-' + Date.now();
                         allNews.unshift(articleData);
                         saveLocalNews(allNews);
@@ -977,7 +1004,6 @@
                 clearSelectedImage();
                 closeAdminModal();
             } catch (error) {
-                console.error("Save error:", error);
                 showToast('সংরক্ষণ করতে সমস্যা হয়েছে!');
             } finally {
                 btn.disabled = false;
@@ -985,7 +1011,6 @@
             }
         };
 
-        // Delete News (Protected by Super Admin Password or Active Master Session)
         window.deleteArticle = async function(id) {
             const activeSession = getActiveSession();
             const isMasterLoggedIn = activeSession && activeSession.role === 'super';
@@ -1005,18 +1030,16 @@
                 return;
             }
             try {
-                if (db && currentUser) {
-                    await deleteDoc(doc(db, 'jp24_news_articles', id));
+                if (db && currentUser && fbOps) {
+                    await fbOps.deleteDoc(fbOps.doc(db, 'jp24_news_articles', id));
                     closeReadModal();
                     showToast('সংবাদটি মুছে ফেলা হয়েছে।');
                 }
             } catch (err) {
-                console.error("Delete error:", err);
                 showToast('মুছে ফেলতে সমস্যা হয়েছে।');
             }
         };
 
-        // Full News Reading Modal with Social Share & Edit Controls
         window.openReadModal = function(id, updateHash = true) {
             const news = allNews.find(n => n.id === id);
             if (!news) return;
@@ -1054,7 +1077,6 @@
                     ${news.content}
                 </div>
 
-                <!-- Social Share & Photo Card Action Bar -->
                 <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
                     <p class="text-xs font-bold text-gray-600 uppercase tracking-wider">সংবাদটি শেয়ার করুন ও ফটো কার্ড তৈরি করুন:</p>
                     <div class="flex flex-wrap items-center gap-2.5">
@@ -1073,7 +1095,6 @@
                     </div>
                 </div>
 
-                <!-- Admin Delete Zone -->
                 <div class="mt-6 pt-4 border-t border-gray-200 flex flex-wrap items-center justify-end gap-2">
                     ${(getActiveSession()?.role === 'super') ? '' : `<input type="password" id="delete-confirm-pass" placeholder="ডিলিট পাসওয়ার্ড" class="px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs w-36 focus:outline-none focus:border-red-600">`}
                     <button onclick="deleteArticle('${news.id}')" class="bg-gray-200 hover:bg-red-600 hover:text-white text-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1">
@@ -1091,7 +1112,6 @@
             history.replaceState(null, null, ' ');
         };
 
-        // Portal Settings & Staff Management Functions
         window.openSettingsModal = function() {
             const activeSession = getActiveSession();
             const passWrapper = document.getElementById('settings-password-wrapper');
@@ -1110,28 +1130,30 @@
 
         let tempCustomLogo = "";
         window.previewLogoImage = async function(event) {
-            const file = event.target.files[0];
+            const file = event.target.files && event.target.files[0];
             if (!file) return;
-            const saveBtn = document.getElementById('save-settings-btn');
-            saveBtn.disabled = true;
-            saveBtn.innerText = 'লোগো আপলোড হচ্ছে...';
 
             try {
+                const compressedLogo = await compressImageFile(file, 300);
+                tempCustomLogo = compressedLogo;
+                document.getElementById('logo-preview-img').src = compressedLogo;
+                document.getElementById('logo-preview-wrap').classList.remove('hidden');
+                showToast('নতুন লোগো যুক্ত হয়েছে, এবার সেভ করুন!');
+
                 const formData = new FormData();
                 formData.append('image', file);
-                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
-                const json = await res.json();
-                if (json.success) {
-                    tempCustomLogo = json.data.url;
-                    document.getElementById('logo-preview-img').src = tempCustomLogo;
-                    document.getElementById('logo-preview-wrap').classList.remove('hidden');
-                    showToast('নতুন লোগো আপলোড হয়েছে, এবার সেভ করুন!');
-                }
+                fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData })
+                    .then(r => r.json())
+                    .then(json => {
+                        if (json && json.success && json.data && json.data.url) {
+                            tempCustomLogo = json.data.url;
+                            document.getElementById('logo-preview-img').src = tempCustomLogo;
+                        }
+                    })
+                    .catch(() => {});
             } catch (e) {
-                showToast('লোগো আপলোড ব্যর্থ হয়েছে!');
+                showToast('লোগো সিলেক্ট করতে সমস্যা হয়েছে!');
             }
-            saveBtn.disabled = false;
-            saveBtn.innerText = 'সেটিংস সেভ করুন';
         };
 
         window.resetDefaultLogo = function() {
@@ -1192,7 +1214,7 @@
             const currentPass = document.getElementById('settings-current-pass').value.trim();
 
             if (!isMasterLoggedIn && currentPass !== portalSettings.adminPass) {
-                showToast('ভুল সুপার অ্যাডমিন পাসওয়ার্ড!');
+                showToast('ভুল সুপার অ্যাডমিন পাসওয়ার্ড! (ডিফল্ট: 2424)');
                 return;
             }
 
@@ -1206,7 +1228,6 @@
                 portalSettings.adminPass = newPass;
             }
 
-            // Save or refresh master login session
             saveAuthSession({ role: 'super', pass: portalSettings.adminPass });
 
             if (tempCustomLogo === "RESET") {
@@ -1216,13 +1237,11 @@
             }
             tempCustomLogo = "";
 
-            localStorage.setItem('jonoprobaho24_settings', JSON.stringify(portalSettings));
-            if (db && currentUser) {
+            try { localStorage.setItem('jonoprobaho24_settings', JSON.stringify(portalSettings)); } catch(e) {}
+            if (db && currentUser && fbOps) {
                 try {
-                    await setDoc(doc(db, 'jp24_settings', 'main_config'), portalSettings);
-                } catch (err) {
-                    console.error("Cloud settings save error:", err);
-                }
+                    await fbOps.setDoc(fbOps.doc(db, 'jp24_settings', 'main_config'), portalSettings);
+                } catch (err) {}
             }
             applySettingsToUI();
             updateBreakingTicker();
@@ -1232,7 +1251,7 @@
             showToast('পোর্টালের সব সেটিংস সফলভাবে সেভ হয়েছে!');
         };
 
-        // Photo Card Generator (Custom Frame Design)
+        // Photo Card Generator (Blue & Red TV News Frame Style - Clean Bengali)
         window.generatePhotoCard = function(id) {
             const news = allNews.find(n => n.id === id);
             if (!news) return;
@@ -1255,257 +1274,193 @@
             const W = 1080;
             const H = 1080;
 
-            ctx.fillStyle = '#f3f4f6';
+            // 1. Deep Blue TV News Gradient Background
+            const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+            bgGrad.addColorStop(0, '#0284c7');
+            bgGrad.addColorStop(0.5, '#0369a1');
+            bgGrad.addColorStop(1, '#1e3a8a');
+            ctx.fillStyle = bgGrad;
             ctx.fillRect(0, 0, W, H);
 
+            // Subtle Halftone World Map Dots Pattern
+            ctx.fillStyle = 'rgba(12, 74, 110, 0.45)';
+            for (let x = 20; x < W; x += 22) {
+                for (let y = 20; y < H; y += 22) {
+                    const wave = Math.sin(x * 0.008) * Math.cos(y * 0.01);
+                    if (wave > -0.25) {
+                        ctx.beginPath();
+                        ctx.arc(x, y, wave > 0.3 ? 6 : 4, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            }
+
+            // 2. Top-Left Round "জনপ্রবাহ24" Logo
+            const logoX = 102;
+            const logoY = 85;
+            const logoR = 54;
+
             ctx.save();
-            ctx.fillStyle = 'rgba(209, 213, 219, 0.45)';
+            ctx.shadowColor = 'rgba(0,0,0,0.4)';
+            ctx.shadowBlur = 12;
             ctx.beginPath();
-            ctx.arc(120, 760, 180, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(960, 680, 160, 0, Math.PI * 2);
+            ctx.arc(logoX, logoY, logoR, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
             ctx.fill();
             ctx.restore();
 
-            ctx.strokeStyle = '#111827';
-            ctx.lineWidth = 4;
-            ctx.strokeRect(22, 22, W - 44, H - 44);
-            ctx.lineWidth = 3;
-            ctx.strokeRect(32, 32, W - 64, H - 64);
-
-            ctx.textAlign = 'left';
-            ctx.fillStyle = '#111827';
-            ctx.font = 'bold 21px "Hind Siliguri", sans-serif';
-            ctx.fillText(portalSettings.slogan || 'সত্যের পথে জনতার পাশে', 64, 66);
-
-            ctx.font = '900 54px "Hind Siliguri", sans-serif';
-            ctx.fillStyle = '#111827';
-            ctx.fillText('জন', 62, 114);
-            const w1 = ctx.measureText('জন').width;
-
-            ctx.fillStyle = '#dc2626';
-            ctx.fillText('প্র', 62 + w1, 114);
-            const w2 = ctx.measureText('প্র').width;
-
-            ctx.fillStyle = '#111827';
-            ctx.fillText('বাহ', 62 + w1 + w2, 114);
-            const w3 = ctx.measureText('বাহ').width;
-
-            ctx.font = '900 54px sans-serif';
-            ctx.lineWidth = 4;
-            ctx.strokeStyle = '#111827';
-            ctx.strokeText('24', 68 + w1 + w2 + w3, 114);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('24', 68 + w1 + w2 + w3, 114);
-
-            const badgeX = 685;
-            const badgeY = 58;
-            const badgeW = 335;
-            const badgeH = 54;
-
-            ctx.save();
-            ctx.beginPath();
-            ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 27);
-            ctx.fillStyle = '#ffffff';
-            ctx.fill();
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = '#e5e7eb';
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = '#ef4444';
             ctx.stroke();
-            ctx.clip();
 
-            ctx.fillStyle = '#b91c1c';
             ctx.beginPath();
-            ctx.moveTo(badgeX, badgeY);
-            ctx.lineTo(badgeX + 135, badgeY);
-            ctx.quadraticCurveTo(badgeX + 115, badgeY + badgeH / 2, badgeX + 135, badgeY + badgeH);
-            ctx.lineTo(badgeX, badgeY + badgeH);
-            ctx.closePath();
-            ctx.fill();
+            ctx.arc(logoX, logoY, logoR - 6, 0, Math.PI * 2);
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#111827';
+            ctx.stroke();
 
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 28px "Hind Siliguri", sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('তারিখ:', badgeX + 62, badgeY + 37);
-
-            const dateStr = new Date(news.timestamp || Date.now()).toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
             ctx.fillStyle = '#111827';
-            ctx.font = 'bold 23px "Hind Siliguri", sans-serif';
+            ctx.font = 'bold 10px "Hind Siliguri", sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText(dateStr, badgeX + 230, badgeY + 36);
-            ctx.restore();
-
-            const frameX = 48;
-            const frameY = 135;
-            const frameW = W - 96;
-            const frameH = 490;
-
-            ctx.fillStyle = '#1e3a8a';
-            ctx.fillRect(frameX, frameY, frameW, frameH);
+            ctx.fillText('সত্যের পথে জনতার পাশে', logoX, logoY - 24);
 
             ctx.fillStyle = '#ef4444';
-            ctx.fillRect(frameX + 8, frameY + 8, frameW - 16, frameH - 16);
+            ctx.fillRect(logoX - 26, logoY - 20, 52, 3);
 
-            const imgX = frameX + 18;
-            const imgY = frameY + 18;
-            const imgW = frameW - 36;
-            const imgH = frameH - 36;
+            ctx.fillStyle = '#111827';
+            ctx.font = '900 48px "Hind Siliguri", sans-serif';
+            ctx.fillText('জ', logoX, logoY + 18);
 
+            ctx.font = 'bold 13px "Hind Siliguri", sans-serif';
+            ctx.fillStyle = '#111827';
+            ctx.fillText('জনপ্রবাহ', logoX - 9, logoY + 35);
+            ctx.fillStyle = '#dc2626';
+            ctx.fillText('24', logoX + 22, logoY + 35);
+
+            // Portal Title & Slogan beside Logo
+            ctx.textAlign = 'left';
+            ctx.font = '900 44px "Hind Siliguri", sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('জনপ্রবাহ', 175, 82);
+            const titleW = ctx.measureText('জনপ্রবাহ').width;
+            ctx.fillStyle = '#fde047';
+            ctx.fillText('২৪', 175 + titleW, 82);
+
+            ctx.font = '600 22px "Hind Siliguri", sans-serif';
+            ctx.fillStyle = '#e0f2fe';
+            ctx.fillText(portalSettings.slogan || 'সত্যের পথে জনতার পাশে', 175, 114);
+
+            // 3. Top-Right Red Date Badge
+            const dateStr = new Date(news.timestamp || Date.now()).toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
+            ctx.save();
+            ctx.shadowColor = 'rgba(0,0,0,0.35)';
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = '#dc2626';
+            ctx.beginPath();
+            ctx.roundRect(W - 295, 48, 245, 50, 10);
+            ctx.fill();
+            ctx.restore();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 23px "Hind Siliguri", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(dateStr, W - 172, 81);
+
+            // 4. Center White-Bordered News Photo Frame
+            const frameX = 65;
+            const frameY = 162;
+            const frameW = W - 130;
+            const frameH = 540;
+
+            ctx.save();
+            ctx.shadowColor = 'rgba(0,0,0,0.45)';
+            ctx.shadowBlur = 18;
             ctx.fillStyle = '#09090b';
-            ctx.fillRect(imgX, imgY, imgW, imgH);
+            ctx.fillRect(frameX, frameY, frameW, frameH);
+            ctx.restore();
 
             if (img) {
                 ctx.save();
                 ctx.beginPath();
-                ctx.rect(imgX, imgY, imgW, imgH);
+                ctx.rect(frameX, frameY, frameW, frameH);
                 ctx.clip();
                 ctx.filter = 'blur(18px) brightness(0.45)';
-                ctx.drawImage(img, imgX - 30, imgY - 30, imgW + 60, imgH + 60);
+                ctx.drawImage(img, frameX - 30, frameY - 30, frameW + 60, frameH + 60);
                 ctx.filter = 'none';
 
-                const scale = Math.min(imgW / img.width, imgH / img.height);
+                const scale = Math.min(frameW / img.width, frameH / img.height);
                 const drawW = img.width * scale;
                 const drawH = img.height * scale;
-                ctx.drawImage(img, imgX + (imgW - drawW) / 2, imgY + (imgH - drawH) / 2, drawW, drawH);
+                ctx.drawImage(img, frameX + (frameW - drawW) / 2, frameY + (frameH - drawH) / 2, drawW, drawH);
                 ctx.restore();
             }
 
-            const cx = W / 2;
-            const cy = frameY + frameH;
-            const radius = 58;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 10;
+            ctx.strokeRect(frameX, frameY, frameW, frameH);
 
-            ctx.beginPath();
-            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            // 5. Lower-Third Graphic (Red Arrow + White Headline Plate + Dark/Red Bottom Strip)
+            ctx.fillStyle = '#18181b';
+            ctx.fillRect(55, 935, W - 110, 26);
+
+            ctx.save();
+            ctx.shadowColor = 'rgba(0,0,0,0.35)';
+            ctx.shadowBlur = 14;
             ctx.fillStyle = '#ffffff';
-            ctx.fill();
-            ctx.lineWidth = 6;
-            ctx.strokeStyle = '#dc2626';
-            ctx.stroke();
+            ctx.fillRect(280, 745, W - 335, 195);
+            ctx.restore();
 
-            ctx.beginPath();
-            ctx.arc(cx, cy, radius - 7, 0, Math.PI * 2);
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = '#111827';
-            ctx.stroke();
-
-            ctx.fillStyle = '#111827';
-            ctx.font = 'bold 11px "Hind Siliguri", sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('সত্যের পথে জনতার পাশে', cx, cy - 26);
-
+            ctx.save();
+            ctx.shadowColor = 'rgba(0,0,0,0.45)';
+            ctx.shadowBlur = 14;
             ctx.fillStyle = '#dc2626';
-            ctx.fillRect(cx - 28, cy - 22, 56, 3);
-
-            ctx.fillStyle = '#111827';
-            ctx.font = '900 54px "Hind Siliguri", sans-serif';
-            ctx.fillText('জ', cx, cy + 20);
-
-            ctx.font = 'bold 14px "Hind Siliguri", sans-serif';
-            ctx.fillStyle = '#111827';
-            ctx.fillText('জনপ্রবাহ', cx - 10, cy + 38);
-            ctx.fillStyle = '#dc2626';
-            ctx.fillText('24', cx + 24, cy + 38);
-
-            ctx.fillStyle = '#111827';
-            ctx.font = 'bold 46px "Hind Siliguri", sans-serif';
-            ctx.textAlign = 'center';
-            wrapCenteredText(ctx, news.title, W / 2, 735, W - 130, 62);
-
-            const iconY = 918;
-            const iconR = 24;
-            const icons = [
-                { x: W / 2 - 105, bg: '#1877F2', label: 'f' },
-                { x: W / 2 - 35,  bg: '#1DA1F2', label: '𝕏' },
-                { x: W / 2 + 35,  bg: '#E1306C', label: '◎' },
-                { x: W / 2 + 105, bg: '#FF0000', label: '▶' }
-            ];
-
-            icons.forEach(ic => {
-                ctx.beginPath();
-                ctx.arc(ic.x, iconY, iconR, 0, Math.PI * 2);
-                ctx.fillStyle = ic.bg;
-                ctx.fill();
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 24px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText(ic.label, ic.x, iconY + 8);
-            });
-
-            const barX = 48;
-            const barY = 958;
-            const barW = W - 96;
-            const barH = 74;
-
-            const grad = ctx.createLinearGradient(barX, barY, barX + barW, barY);
-            grad.addColorStop(0, '#cbd5e1');
-            grad.addColorStop(0.2, '#64748b');
-            grad.addColorStop(0.5, '#94a3b8');
-            grad.addColorStop(0.8, '#64748b');
-            grad.addColorStop(1, '#cbd5e1');
-
-            ctx.fillStyle = grad;
-            ctx.fillRect(barX, barY, barW, barH);
-            ctx.strokeStyle = '#1e3a8a';
-            ctx.lineWidth = 3;
-            ctx.strokeRect(barX, barY, barW, barH);
-
-            ctx.fillStyle = '#1e3a8a';
             ctx.beginPath();
-            ctx.moveTo(barX + 185, barY);
-            ctx.lineTo(barX + 215, barY);
-            ctx.lineTo(barX + 185, barY + barH);
-            ctx.lineTo(barX + 155, barY + barH);
+            ctx.moveTo(45, 725);
+            ctx.lineTo(275, 725);
+            ctx.lineTo(275, 695);
+            ctx.lineTo(355, 835);
+            ctx.lineTo(275, 975);
+            ctx.lineTo(275, 945);
+            ctx.lineTo(45, 945);
             ctx.closePath();
             ctx.fill();
+            ctx.restore();
 
-            ctx.beginPath();
-            ctx.moveTo(barX + barW - 185, barY);
-            ctx.lineTo(barX + barW - 155, barY);
-            ctx.lineTo(barX + barW - 185, barY + barH);
-            ctx.lineTo(barX + barW - 215, barY + barH);
-            ctx.closePath();
-            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '900 34px "Hind Siliguri", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(news.category || 'সর্বশেষ', 175, 825);
 
-            ctx.font = '900 58px "Hind Siliguri", sans-serif';
-            const bw1 = ctx.measureText('জন').width;
-            const bw2 = ctx.measureText('প্র').width;
-            const bw3 = ctx.measureText('বাহ').width;
-            ctx.font = '900 58px sans-serif';
-            const bw4 = ctx.measureText(' 24').width;
-            const totalW = bw1 + bw2 + bw3 + bw4;
-            let startX = (W - totalW) / 2;
+            ctx.fillStyle = '#fde047';
+            ctx.font = 'bold 22px "Hind Siliguri", sans-serif';
+            ctx.fillText('সংবাদ', 175, 862);
 
+            ctx.fillStyle = '#111827';
+            ctx.font = 'bold 42px "Hind Siliguri", sans-serif';
             ctx.textAlign = 'left';
-            ctx.lineJoin = 'round';
+            wrapHeadlineText(ctx, news.title, 375, 810, W - 455, 54);
 
-            ctx.font = '900 58px "Hind Siliguri", sans-serif';
-            ctx.lineWidth = 7;
-            ctx.strokeStyle = '#ffffff';
-            ctx.strokeText('জন', startX, barY + 56);
-            ctx.fillStyle = '#111827';
-            ctx.fillText('জন', startX, barY + 56);
-            startX += bw1;
-
-            ctx.strokeStyle = '#ffffff';
-            ctx.strokeText('প্র', startX, barY + 56);
             ctx.fillStyle = '#dc2626';
-            ctx.fillText('প্র', startX, barY + 56);
-            startX += bw2;
+            ctx.beginPath();
+            ctx.moveTo(690, 935);
+            ctx.lineTo(1025, 935);
+            ctx.lineTo(1010, 995);
+            ctx.lineTo(675, 995);
+            ctx.closePath();
+            ctx.fill();
 
-            ctx.strokeStyle = '#ffffff';
-            ctx.strokeText('বাহ', startX, barY + 56);
-            ctx.fillStyle = '#111827';
-            ctx.fillText('বাহ', startX, barY + 56);
-            startX += bw3;
-
-            ctx.font = '900 58px sans-serif';
-            ctx.strokeStyle = '#1e3a8a';
-            ctx.strokeText(' 24', startX, barY + 56);
             ctx.fillStyle = '#ffffff';
-            ctx.fillText(' 24', startX, barY + 56);
+            ctx.font = 'bold 26px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('jonoprobaho24.com', 850, 973);
+
+            ctx.fillStyle = '#e0f2fe';
+            ctx.font = '600 22px "Hind Siliguri", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(`প্রতিবেদক: ${news.reporter || 'নিজস্ব প্রতিবেদক'}`, 60, 988);
         }
 
-        function wrapCenteredText(ctx, text, x, y, maxWidth, lineHeight) {
+        function wrapHeadlineText(ctx, text, x, y, maxWidth, lineHeight) {
             const words = text.split(' ');
             let line = '';
             let lines = [];
@@ -1527,7 +1482,7 @@
                 lines[2] = lines[2].slice(0, -3) + '...';
             }
 
-            const startY = lines.length === 1 ? y + 35 : (lines.length === 2 ? y + 10 : y - 10);
+            const startY = lines.length === 1 ? y + 42 : (lines.length === 2 ? y + 18 : y - 5);
             lines.forEach((l, idx) => {
                 ctx.fillText(l, x, startY + idx * lineHeight);
             });
@@ -1544,7 +1499,6 @@
             showToast('ফটো কার্ড ডাউনলোড হয়েছে!');
         };
 
-        // Copy Exact Article Link
         window.copyExactNewsLink = function(id, title) {
             const baseUrl = window.location.href.split('#')[0];
             const exactUrl = `${baseUrl}#news=${id}`;
