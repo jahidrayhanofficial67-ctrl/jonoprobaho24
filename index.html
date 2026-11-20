@@ -6,17 +6,16 @@
     <title>জনপ্রবাহ২৪ | সত্যের পথে জনতার পাশে</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Hind Siliguri for clean Bengali typography -->
+    <!-- Google Fonts: Hind Siliguri -->
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for Icons -->
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             font-family: 'Hind Siliguri', sans-serif;
-            background-color: #f8f9fa;
+            background-color: #f4f5f7;
             color: #111827;
         }
-        /* Breaking News Ticker Animation */
         @keyframes ticker {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
@@ -29,51 +28,42 @@
         .animate-ticker:hover {
             animation-play-state: paused;
         }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #dc2626;
-            border-radius: 3px;
-        }
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 3px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <!-- Top Date & Admin Bar -->
+    <!-- Top Date & Admin Control Bar -->
     <div class="bg-black text-white text-xs sm:text-sm py-2 px-4 border-b border-red-600">
         <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
             <div class="flex items-center space-x-3">
                 <span><i class="far fa-calendar-alt text-red-500 mr-1"></i> <span id="current-date">লোড হচ্ছে...</span></span>
                 <span class="hidden sm:inline text-gray-500">|</span>
-                <span class="hidden sm:inline text-gray-300">বাংলাদেশ</span>
+                <span id="db-status-badge" class="text-[11px] bg-gray-800 text-gray-300 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span> লোকাল মোড
+                </span>
             </div>
-            <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-2">
+                <button onclick="openSettingsModal()" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1 rounded-md text-xs font-semibold transition flex items-center gap-1.5 border border-gray-600">
+                    <i class="fas fa-cog text-red-400"></i> সেটিংস
+                </button>
                 <button onclick="openAdminModal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-xs font-bold transition flex items-center gap-1.5 shadow">
-                    <i class="fas fa-plus-circle"></i> নিউজ পোস্ট (অ্যাডমিন)
+                    <i class="fas fa-plus-circle"></i> নিউজ পোস্ট
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Main Header & Brand Logo -->
+    <!-- Main Header & Dynamic Brand Logo -->
     <header class="bg-white shadow-sm py-3.5 px-4 border-b-2 border-red-600 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
-            <!-- Brand Logo matching uploaded design -->
-            <a href="#" onclick="filterCategory('সর্বশেষ'); return false;" class="flex items-center gap-3 group">
-                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-4 border-red-600 p-0.5 bg-white shadow-md flex items-center justify-center shrink-0">
+            <a href="#" onclick="resetToHome(); return false;" class="flex items-center gap-3 group">
+                <!-- Dynamic Logo Container -->
+                <div id="header-logo-container" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-4 border-red-600 p-0.5 bg-white shadow-md flex items-center justify-center shrink-0 overflow-hidden">
                     <div class="w-full h-full rounded-full border-2 border-black flex flex-col items-center justify-center bg-white">
                         <span class="text-[6px] sm:text-[7px] font-bold text-black leading-none tracking-tighter">সত্যের পথে জনতার পাশে</span>
                         <div class="w-7 h-0.5 bg-red-600 my-0.5"></div>
@@ -82,10 +72,10 @@
                     </div>
                 </div>
                 <div>
-                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-black leading-none">
+                    <h1 id="header-portal-name" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-black leading-none">
                         জনপ্রবাহ<span class="text-red-600">২৪</span>
                     </h1>
-                    <p class="text-xs sm:text-sm font-semibold text-gray-600 mt-1">সত্যের পথে জনতার পাশে</p>
+                    <p id="header-portal-slogan" class="text-xs sm:text-sm font-semibold text-gray-600 mt-1">সত্যের পথে জনতার পাশে</p>
                 </div>
             </a>
 
@@ -133,7 +123,6 @@
 
     <!-- Main Content Area -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6">
-        <!-- Section Heading -->
         <div class="flex items-center justify-between border-b-2 border-gray-200 pb-2 mb-6">
             <h2 id="section-title" class="text-xl sm:text-2xl font-bold text-black flex items-center gap-2">
                 <span class="w-3 h-6 bg-red-600 inline-block rounded-sm"></span> সর্বশেষ সংবাদ
@@ -168,7 +157,7 @@
                 <div class="flex items-center gap-2 mb-3">
                     <span class="text-2xl font-extrabold text-white">জনপ্রবাহ<span class="text-red-600">২৪</span></span>
                 </div>
-                <p class="text-sm text-gray-400 leading-relaxed">
+                <p id="footer-about-text" class="text-sm text-gray-400 leading-relaxed">
                     "সত্যের পথে জনতার পাশে" — বস্তুনিষ্ঠ ও নিরপেক্ষ সংবাদ পরিবেশনে প্রতিশ্রুতিবদ্ধ একটি আধুনিক অনলাইন নিউজ পোর্টাল।
                 </p>
             </div>
@@ -183,9 +172,9 @@
             </div>
             <div>
                 <h4 class="text-white font-bold text-base mb-3 border-l-4 border-red-600 pl-2">সম্পাদকীয় ও যোগাযোগ</h4>
-                <p class="text-sm text-gray-400">সম্পাদক ও প্রকাশক: <strong>মাওলানা মুহাঃ জাহিদ রায়হান</strong></p>
-                <p class="text-sm text-gray-400 mt-1">ওয়েবসাইট: jonoprobaho24.com</p>
-                <p class="text-sm text-gray-400 mt-1">ইমেইল: news@jonoprobaho24.com</p>
+                <p class="text-sm text-gray-400">সম্পাদক ও প্রকাশক: <strong id="footer-editor" class="text-white">এইচ এম জাহিদ রায়হান</strong></p>
+                <p class="text-sm text-gray-400 mt-1">কার্যালয়: <span id="footer-address">সদর রোড, বাকেরগঞ্জ, বরিশাল</span></p>
+                <p class="text-sm text-gray-400 mt-1">ইমেইল: <span id="footer-email">news@jonoprobaho24.com</span></p>
             </div>
         </div>
         <div class="bg-gray-950 py-3 px-4 text-center text-xs text-gray-500 border-t border-gray-800">
@@ -194,8 +183,8 @@
     </footer>
 
     <!-- Full News Reading Modal -->
-    <div id="read-modal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-        <div class="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative">
+    <div id="read-modal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-xl max-w-3xl w-full max-h-[92vh] overflow-y-auto shadow-2xl relative">
             <button onclick="closeReadModal()" class="sticky top-3 float-right mr-3 mt-3 bg-red-600 hover:bg-red-700 text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg z-10">
                 <i class="fas fa-times"></i>
             </button>
@@ -203,11 +192,11 @@
         </div>
     </div>
 
-    <!-- Admin Post News Modal -->
+    <!-- Admin Post / Edit News Modal -->
     <div id="admin-modal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white rounded-xl max-w-xl w-full p-5 sm:p-6 shadow-2xl relative my-auto">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
-                <h3 class="text-lg sm:text-xl font-bold text-black flex items-center gap-2">
+                <h3 id="admin-modal-heading" class="text-lg sm:text-xl font-bold text-black flex items-center gap-2">
                     <i class="fas fa-edit text-red-600"></i> নতুন সংবাদ প্রকাশ করুন
                 </h3>
                 <button onclick="closeAdminModal()" class="text-gray-500 hover:text-red-600 text-xl p-1">
@@ -215,10 +204,12 @@
                 </button>
             </div>
             <form id="post-news-form" onsubmit="handlePostNews(event)" class="space-y-4">
+                <input type="hidden" id="edit-news-id" value="">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">অ্যাডমিন পাসওয়ার্ড * <span class="text-xs font-normal text-gray-500">(ডিফল্ট পাসওয়ার্ড: 2424)</span></label>
-                    <input type="password" id="admin-password" required placeholder="পাসওয়ার্ড লিখুন (2424)" 
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">অ্যাডমিন / প্রতিনিধি পাসওয়ার্ড *</label>
+                    <input type="password" id="admin-password" required onkeyup="autoFillReporterName()" placeholder="আপনার নির্ধারিত পাসওয়ার্ড লিখুন" 
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600">
+                    <p id="detected-role-badge" class="hidden text-xs font-bold text-green-600 mt-1"></p>
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">সংবাদের শিরোনাম *</label>
@@ -246,14 +237,14 @@
                     </div>
                 </div>
                 
-                <!-- Gallery Image Upload -->
+                <!-- Smart Gallery Image Upload -->
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">গ্যালারি থেকে ছবি সিলেক্ট করুন (ঐচ্ছিক)</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">গ্যালারি থেকে ছবি সিলেক্ট করুন (অটো-ফিট ফ্রেম)</label>
                     <input type="file" id="news-image-file" accept="image/*" onchange="previewSelectedImage(event)"
                         class="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600 text-sm bg-gray-50 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer">
-                    <div id="image-preview-box" class="hidden mt-2 relative">
-                        <img id="image-preview-img" src="" class="h-36 w-full object-cover rounded-lg border">
-                        <button type="button" onclick="clearSelectedImage()" class="absolute top-2 right-2 bg-black bg-opacity-75 text-white rounded-full w-7 h-7 text-xs flex items-center justify-center hover:bg-red-600 shadow">
+                    <div id="image-preview-box" class="hidden mt-2 relative bg-gray-900 rounded-lg overflow-hidden border">
+                        <img id="image-preview-img" src="" class="h-44 w-full object-contain mx-auto">
+                        <button type="button" onclick="clearSelectedImage()" class="absolute top-2 right-2 bg-red-600 text-white rounded-full w-7 h-7 text-xs flex items-center justify-center shadow">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -280,6 +271,93 @@
         </div>
     </div>
 
+    <!-- Portal Admin Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-xl max-w-lg w-full p-5 sm:p-6 shadow-2xl relative my-auto">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-lg sm:text-xl font-bold text-black flex items-center gap-2">
+                    <i class="fas fa-sliders-h text-red-600"></i> পোর্টাল সেটিংস ও প্রোফাইল
+                </h3>
+                <button onclick="closeSettingsModal()" class="text-gray-500 hover:text-red-600 text-xl p-1">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form onsubmit="savePortalSettings(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">বর্তমান সুপার অ্যাডমিন পাসওয়ার্ড *</label>
+                    <input type="password" id="settings-current-pass" required placeholder="বর্তমান পাসওয়ার্ড দিন (ডিফল্ট: 2424)" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600">
+                </div>
+
+                <!-- Logo / Profile Photo Upload -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">পোর্টালের লোগো / প্রোফাইল ছবি পরিবর্তন করুন</label>
+                    <input type="file" id="settings-logo-file" accept="image/*" onchange="previewLogoImage(event)"
+                        class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-gray-50 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white cursor-pointer">
+                    <div id="logo-preview-wrap" class="hidden mt-2 flex items-center gap-3">
+                        <img id="logo-preview-img" src="" class="w-14 h-14 rounded-full object-cover border-2 border-red-600">
+                        <button type="button" onclick="resetDefaultLogo()" class="text-xs text-red-600 underline">ডিফল্ট লোগো ফিরিয়ে আনুন</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">স্লোগান</label>
+                        <input type="text" id="settings-slogan" value="সত্যের পথে জনতার পাশে" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">সম্পাদকের নাম</label>
+                        <input type="text" id="settings-editor" value="এইচ এম জাহিদ রায়হান" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">কার্যালয়ের ঠিকানা</label>
+                        <input type="text" id="settings-address" value="সদর রোড, বাকেরগঞ্জ, বরিশাল" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">যোগাযোগের ইমেইল</label>
+                        <input type="text" id="settings-email" value="news@jonoprobaho24.com" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">নতুন সুপার অ্যাডমিন পাসওয়ার্ড (পরিবর্তন করতে চাইলে)</label>
+                    <input type="text" id="settings-new-pass" placeholder="ফাঁকা রাখলে আগের পাসওয়ার্ডই থাকবে" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                </div>
+
+                <!-- Sub-Admin / Reporter Management Section -->
+                <div class="bg-gray-50 p-3.5 rounded-lg border border-gray-200 space-y-3">
+                    <h4 class="text-sm font-bold text-black flex items-center gap-1.5">
+                        <i class="fas fa-users-cog text-red-600"></i> অ্যাডমিন / প্রতিনিধি নিয়োগ দিন
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <input type="text" id="new-staff-name" placeholder="নাম (যেমন: রাকিব হাসান)" class="px-2.5 py-1.5 border border-gray-300 rounded text-xs">
+                        <input type="text" id="new-staff-role" placeholder="পদবি (যেমন: জেলা প্রতিনিধি)" class="px-2.5 py-1.5 border border-gray-300 rounded text-xs">
+                        <div class="flex gap-1">
+                            <input type="text" id="new-staff-pass" placeholder="পাসওয়ার্ড" class="w-full px-2.5 py-1.5 border border-gray-300 rounded text-xs">
+                            <button type="button" onclick="addSubAdmin()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold shrink-0">যুক্ত</button>
+                        </div>
+                    </div>
+                    <div id="staff-list-container" class="space-y-1.5 max-h-32 overflow-y-auto text-xs"></div>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-3 border-t">
+                    <button type="button" onclick="closeSettingsModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium">বাতিল</button>
+                    <button type="submit" class="px-5 py-2 bg-black hover:bg-red-600 text-white rounded-lg font-semibold shadow transition">
+                        সেটিংস সেভ করুন
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Photo Card Generator Modal -->
     <div id="photocard-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white rounded-xl max-w-lg w-full p-5 shadow-2xl relative">
@@ -292,7 +370,6 @@
                 </button>
             </div>
             
-            <!-- Canvas Preview Container -->
             <div class="flex justify-center bg-gray-100 p-3 rounded-lg border border-gray-200 mb-4">
                 <canvas id="photocard-canvas" class="max-w-full h-auto rounded shadow-md" style="max-height: 400px;"></canvas>
             </div>
@@ -316,10 +393,65 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, updateDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Admin Password (Change this anytime if needed)
-        const ADMIN_PASS = "2424";
+        // =========================================================================
+        // আপনার নিজের FIREBASE CONFIG এখানে বসালে সারাদেশের সবাই আপনার নিউজ দেখতে পাবে
+        // (নিচে null রাখলে আপাতত আপনার ফোনের লোকাল স্টোরেজে সেভ হবে)
+        // =========================================================================
+        const CUSTOM_FIREBASE_CONFIG = null;
+
+        // Default Portal Settings
+        let portalSettings = {
+            adminPass: "2424",
+            slogan: "সত্যের পথে জনতার পাশে",
+            editor: "এইচ এম জাহিদ রায়হান",
+            address: "সদর রোড, বাকেরগঞ্জ, বরিশাল",
+            email: "news@jonoprobaho24.com",
+            customLogo: "",
+            subAdmins: []
+        };
+
+        // Load Settings from LocalStorage
+        function loadSettings() {
+            try {
+                const saved = localStorage.getItem('jonoprobaho24_settings');
+                if (saved) {
+                    portalSettings = { ...portalSettings, ...JSON.parse(saved) };
+                    if (!Array.isArray(portalSettings.subAdmins)) portalSettings.subAdmins = [];
+                }
+            } catch (e) {
+                console.error("Settings load error:", e);
+            }
+            applySettingsToUI();
+        }
+
+        function applySettingsToUI() {
+            document.getElementById('header-portal-slogan').innerText = portalSettings.slogan;
+            document.getElementById('footer-editor').innerText = portalSettings.editor;
+            document.getElementById('footer-address').innerText = portalSettings.address;
+            document.getElementById('footer-email').innerText = portalSettings.email;
+
+            document.getElementById('settings-slogan').value = portalSettings.slogan;
+            document.getElementById('settings-editor').value = portalSettings.editor;
+            document.getElementById('settings-address').value = portalSettings.address;
+            document.getElementById('settings-email').value = portalSettings.email;
+
+            const logoContainer = document.getElementById('header-logo-container');
+            if (portalSettings.customLogo) {
+                logoContainer.innerHTML = `<img src="${portalSettings.customLogo}" class="w-full h-full object-cover rounded-full">`;
+                document.getElementById('logo-preview-img').src = portalSettings.customLogo;
+                document.getElementById('logo-preview-wrap').classList.remove('hidden');
+            } else {
+                logoContainer.innerHTML = `
+                    <div class="w-full h-full rounded-full border-2 border-black flex flex-col items-center justify-center bg-white">
+                        <span class="text-[6px] sm:text-[7px] font-bold text-black leading-none tracking-tighter">সত্যের পথে জনতার পাশে</span>
+                        <div class="w-7 h-0.5 bg-red-600 my-0.5"></div>
+                        <span class="text-2xl sm:text-3xl font-black text-black leading-none -mt-0.5">জ</span>
+                        <span class="text-[7px] sm:text-[8px] font-extrabold text-black leading-none">জনপ্রবাহ<span class="text-red-600">24</span></span>
+                    </div>`;
+            }
+        }
 
         // Set Bengali Date
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -331,9 +463,9 @@
                 id: 'sample-1',
                 title: 'জনপ্রবাহ২৪ ডট কমের আনুষ্ঠানিক যাত্রা শুরু: সত্যের পথে জনতার পাশে থাকার অঙ্গীকার',
                 category: 'জাতীয়',
-                reporter: 'নিজস্ব প্রতিবেদক, ঢাকা',
+                reporter: 'নিজস্ব প্রতিবেদক, বাকেরগঞ্জ',
                 image: 'https://placehold.co/800x450/111827/ffffff?text=Jonoprobaho24+News',
-                content: 'সত্য ও বস্তুনিষ্ঠ সংবাদ পরিবেশনের অঙ্গীকার নিয়ে আনুষ্ঠানিকভাবে যাত্রা শুরু করলো অনলাইন নিউজ পোর্টাল জনপ্রবাহ২৪ (Jonoprobaho24.com)। দেশের আনাচে-কানাচে ঘটে যাওয়া সকল সংবাদ সবার আগে পাঠকদের কাছে পৌঁছে দিতে কাজ করবে এই পোর্টালটি। সম্পাদকীয় বোর্ডের পক্ষ থেকে জানানো হয়েছে, কোনো ধরনের গুজব বা পক্ষপাতিত্ব ছাড়াই জনগণের কথা তুলে ধরাই হবে জনপ্রবাহ২৪-এর মূল লক্ষ্য।',
+                content: 'সত্য ও বস্তুনিষ্ঠ সংবাদ পরিবেশনের অঙ্গীকার নিয়ে আনুষ্ঠানিকভাবে যাত্রা শুরু করলো অনলাইন নিউজ পোর্টাল জনপ্রবাহ২৪ (Jonoprobaho24.com)। দেশের আনাচে-কানাচে ঘটে যাওয়া সকল সংবাদ সবার আগে পাঠকদের কাছে পৌঁছে দিতে কাজ করবে এই পোর্টালটি।',
                 isBreaking: true,
                 timestamp: Date.now()
             },
@@ -346,16 +478,6 @@
                 content: 'চলতি অর্থবছরের সাম্প্রতিক পরিসংখ্যানে দেশের রপ্তানি আয়ে ইতিবাচক প্রবৃদ্ধি লক্ষ্য করা গেছে। বিশেষ করে তৈরি পোশাক, চামড়াজাত পণ্য এবং তথ্যপ্রযুক্তি খাতে বৈদেশিক মুদ্রা অর্জনের হার বেড়েছে।',
                 isBreaking: false,
                 timestamp: Date.now() - 3600000
-            },
-            {
-                id: 'sample-3',
-                title: 'তরুণ প্রজন্মের হাত ধরেই গড়ে উঠবে আগামীর সমৃদ্ধ বাংলাদেশ',
-                category: 'রাজনীতি',
-                reporter: 'বিশেষ প্রতিনিধি',
-                image: 'https://placehold.co/800x450/1f2937/ffffff?text=Youth+and+Nation',
-                content: 'দেশের সামাজিক ও রাজনৈতিক পরিবর্তনে তরুণ সমাজের ভূমিকা অনস্বীকার্য। নৈতিকতা, দেশপ্রেম এবং আধুনিক শিক্ষায় শিক্ষিত হয়ে তরুণরা এগিয়ে এলে যেকোনো সংকট মোকাবিলা করা সম্ভব বলে মন্তব্য করেছেন বিশিষ্ট চিন্তাবিদরা।',
-                isBreaking: false,
-                timestamp: Date.now() - 7200000
             }
         ];
 
@@ -366,18 +488,15 @@
         let currentUser = null;
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'jonoprobaho24-portal';
 
-        // LocalStorage Helper for GitHub Pages Standalone Mode
         function loadLocalNews() {
             try {
                 const saved = localStorage.getItem('jonoprobaho24_articles');
                 if (saved) {
                     const parsed = JSON.parse(saved);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
-                        return parsed;
-                    }
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
                 }
             } catch (e) {
-                console.error("Local load error:", e);
+                console.error("Local news load error:", e);
             }
             return [...sampleNews];
         }
@@ -386,16 +505,18 @@
             try {
                 localStorage.setItem('jonoprobaho24_articles', JSON.stringify(articles));
             } catch (e) {
-                console.error("Local save error:", e);
+                console.error("Local news save error:", e);
             }
         }
 
-        // Initialize App (Supports both Cloud Firebase & GitHub Pages LocalStorage)
+        // Initialize App
         async function initApp() {
+            loadSettings();
             try {
-                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    const firebaseConfig = JSON.parse(__firebase_config);
-                    const app = initializeApp(firebaseConfig);
+                const activeConfig = CUSTOM_FIREBASE_CONFIG || (typeof __firebase_config !== 'undefined' && __firebase_config ? JSON.parse(__firebase_config) : null);
+                
+                if (activeConfig) {
+                    const app = initializeApp(activeConfig);
                     db = getFirestore(app);
                     auth = getAuth(app);
 
@@ -408,6 +529,7 @@
                     onAuthStateChanged(auth, (user) => {
                         currentUser = user;
                         if (user) {
+                            document.getElementById('db-status-badge').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> লাইভ ক্লাউড`;
                             listenToNews();
                         }
                     });
@@ -415,16 +537,17 @@
                     allNews = loadLocalNews();
                     updateBreakingTicker();
                     renderNews();
+                    checkUrlHashForArticle();
                 }
             } catch (error) {
                 console.error("Init error:", error);
                 allNews = loadLocalNews();
                 updateBreakingTicker();
                 renderNews();
+                checkUrlHashForArticle();
             }
         }
 
-        // Listen to Firestore Public News Collection
         function listenToNews() {
             if (!db || !currentUser) return;
             document.getElementById('loading-spinner').classList.remove('hidden');
@@ -433,21 +556,16 @@
             onSnapshot(newsCol, (snapshot) => {
                 document.getElementById('loading-spinner').classList.add('hidden');
                 const fetchedNews = [];
-                snapshot.forEach((doc) => {
-                    fetchedNews.push({ id: doc.id, ...doc.data() });
+                snapshot.forEach((docItem) => {
+                    fetchedNews.push({ id: docItem.id, ...docItem.data() });
                 });
-
                 fetchedNews.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-                if (fetchedNews.length === 0) {
-                    allNews = loadLocalNews();
-                } else {
-                    allNews = fetchedNews;
-                }
+                allNews = fetchedNews.length === 0 ? loadLocalNews() : fetchedNews;
                 updateBreakingTicker();
                 renderNews();
-            }, (error) => {
-                console.error("Snapshot error:", error);
+                checkUrlHashForArticle();
+            }, () => {
                 document.getElementById('loading-spinner').classList.add('hidden');
                 allNews = loadLocalNews();
                 updateBreakingTicker();
@@ -455,18 +573,45 @@
             });
         }
 
-        // Update Breaking News Ticker
+        // Deep Linking: Open Specific Article from Shared Link (#news=ID)
+        function checkUrlHashForArticle() {
+            const hash = window.location.hash;
+            if (hash && hash.startsWith('#news=')) {
+                const articleId = hash.replace('#news=', '');
+                const found = allNews.find(n => n.id === articleId);
+                if (found) {
+                    openReadModal(articleId, false);
+                }
+            }
+        }
+
+        window.resetToHome = function() {
+            history.replaceState(null, null, ' ');
+            closeReadModal();
+            filterCategory('সর্বশেষ');
+        };
+
         function updateBreakingTicker() {
             const breakingItems = allNews.filter(n => n.isBreaking);
             const tickerEl = document.getElementById('breaking-ticker-text');
             if (breakingItems.length > 0) {
                 tickerEl.innerHTML = breakingItems.map(item => `• ${item.title}`).join(' &nbsp;&nbsp;&nbsp;&nbsp; ');
             } else {
-                tickerEl.innerHTML = '• জনপ্রবাহ২৪ ডট কমে আপনাকে স্বাগতম — সত্যের পথে জনতার পাশে • সর্বশেষ সংবাদ জানতে আমাদের সাথেই থাকুন';
+                tickerEl.innerHTML = `• জনপ্রবাহ২৪ ডট কমে আপনাকে স্বাগতম — ${portalSettings.slogan} • সর্বশেষ সংবাদ জানতে আমাদের সাথেই থাকুন`;
             }
         }
 
-        // Render News to UI
+        // Smart Image Container HTML (Prevents Cropping or Stretching)
+        function renderSmartImage(src, heightClass) {
+            return `
+                <div class="relative ${heightClass} w-full bg-gray-900 overflow-hidden flex items-center justify-center">
+                    <img src="${src}" class="absolute inset-0 w-full h-full object-cover blur-md opacity-40 scale-110" aria-hidden="true">
+                    <img src="${src}" onerror="this.src='https://placehold.co/800x450/111827/ffffff?text=Jonoprobaho24'" class="relative z-10 max-h-full max-w-full object-contain transition duration-300 group-hover:scale-105">
+                </div>
+            `;
+        }
+
+        // Render News Grid
         window.renderNews = function() {
             const searchQuery = document.getElementById('search-input').value.toLowerCase();
             let filtered = allNews.filter(news => {
@@ -498,7 +643,9 @@
 
                 let sideHtml = sideLeads.map(item => `
                     <div onclick="openReadModal('${item.id}')" class="flex gap-3 bg-white p-3 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer group">
-                        <img src="${item.image}" onerror="this.src='https://placehold.co/300x200/111827/ffffff?text=Jonoprobaho24'" class="w-28 h-20 object-cover rounded-lg shrink-0">
+                        <div class="w-28 h-20 bg-gray-900 rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
+                            <img src="${item.image}" onerror="this.src='https://placehold.co/300x200/111827/ffffff?text=News'" class="w-full h-full object-cover">
+                        </div>
                         <div class="flex flex-col justify-between">
                             <span class="text-[11px] font-bold text-red-600">${item.category}</span>
                             <h4 class="text-sm font-bold text-gray-900 group-hover:text-red-600 transition line-clamp-2">${item.title}</h4>
@@ -509,9 +656,9 @@
 
                 leadContainer.innerHTML = `
                     <div onclick="openReadModal('${mainLead.id}')" class="lg:col-span-7 bg-white rounded-xl overflow-hidden shadow-md border border-gray-200 cursor-pointer group flex flex-col">
-                        <div class="relative overflow-hidden h-64 sm:h-80">
-                            <img src="${mainLead.image}" onerror="this.src='https://placehold.co/800x450/111827/ffffff?text=Jonoprobaho24'" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <span class="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded shadow">${mainLead.category}</span>
+                        <div class="relative">
+                            ${renderSmartImage(mainLead.image, 'h-64 sm:h-80')}
+                            <span class="absolute top-3 left-3 z-20 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded shadow">${mainLead.category}</span>
                         </div>
                         <div class="p-5 flex-grow flex flex-col justify-between">
                             <div>
@@ -538,9 +685,9 @@
                 card.className = "bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-lg transition flex flex-col cursor-pointer group";
                 card.onclick = () => openReadModal(news.id);
                 card.innerHTML = `
-                    <div class="relative h-48 overflow-hidden">
-                        <img src="${news.image}" onerror="this.src='https://placehold.co/600x400/111827/ffffff?text=Jonoprobaho24'" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                        <span class="absolute top-2.5 left-2.5 bg-black bg-opacity-80 text-white text-xs font-semibold px-2.5 py-0.5 rounded border-l-2 border-red-600">${news.category}</span>
+                    <div class="relative">
+                        ${renderSmartImage(news.image, 'h-48')}
+                        <span class="absolute top-2.5 left-2.5 z-20 bg-black bg-opacity-80 text-white text-xs font-semibold px-2.5 py-0.5 rounded border-l-2 border-red-600">${news.category}</span>
                     </div>
                     <div class="p-4 flex-grow flex flex-col justify-between">
                         <div>
@@ -557,11 +704,9 @@
             });
         };
 
-        // Filter by Category
         window.filterCategory = function(category) {
             currentCategory = category;
             document.getElementById('section-title').innerHTML = `<span class="w-3 h-6 bg-red-600 inline-block rounded-sm"></span> ${category} সংবাদ`;
-            
             document.querySelectorAll('.cat-btn').forEach(btn => {
                 if (btn.innerText.trim() === category) {
                     btn.classList.add('bg-red-600', 'text-white');
@@ -572,12 +717,9 @@
             renderNews();
         };
 
-        // Search News
-        window.searchNews = function() {
-            renderNews();
-        };
+        window.searchNews = function() { renderNews(); };
 
-        // Handle Image Selection & Automatic Compression
+        // Image Upload & Smart Optimization
         let uploadedImageBase64 = "";
 
         window.previewSelectedImage = function(event) {
@@ -589,7 +731,7 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const maxWidth = 800;
+                    const maxWidth = 900;
                     let width = img.width;
                     let height = img.height;
 
@@ -603,7 +745,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    uploadedImageBase64 = canvas.toDataURL('image/jpeg', 0.78);
+                    uploadedImageBase64 = canvas.toDataURL('image/jpeg', 0.82);
                     document.getElementById('image-preview-img').src = uploadedImageBase64;
                     document.getElementById('image-preview-box').classList.remove('hidden');
                 };
@@ -618,62 +760,151 @@
             document.getElementById('image-preview-box').classList.add('hidden');
         };
 
-        // Post New Article
+        // Open Admin Modal (For New Post or Edit Post)
+        window.openAdminModal = function(editId = null) {
+            document.getElementById('post-news-form').reset();
+            clearSelectedImage();
+            document.getElementById('edit-news-id').value = editId || "";
+            document.getElementById('detected-role-badge').classList.add('hidden');
+
+            if (editId) {
+                const news = allNews.find(n => n.id === editId);
+                if (!news) return;
+                document.getElementById('admin-modal-heading').innerHTML = `<i class="fas fa-edit text-red-600"></i> সংবাদ সম্পাদনা (Edit) করুন`;
+                document.getElementById('submit-news-btn').innerHTML = `<i class="fas fa-save"></i> আপডেট করুন`;
+                document.getElementById('news-title').value = news.title;
+                document.getElementById('news-category').value = news.category;
+                document.getElementById('news-reporter').value = news.reporter;
+                document.getElementById('news-content').value = news.content;
+                document.getElementById('news-breaking').checked = !!news.isBreaking;
+                if (news.image) {
+                    uploadedImageBase64 = news.image;
+                    document.getElementById('image-preview-img').src = news.image;
+                    document.getElementById('image-preview-box').classList.remove('hidden');
+                }
+            } else {
+                document.getElementById('admin-modal-heading').innerHTML = `<i class="fas fa-plus-circle text-red-600"></i> নতুন সংবাদ প্রকাশ করুন`;
+                document.getElementById('submit-news-btn').innerHTML = `<i class="fas fa-paper-plane"></i> প্রকাশ করুন`;
+            }
+
+            document.getElementById('admin-modal').classList.remove('hidden');
+        };
+
+        // Auto-detect Super Admin vs Appointed Sub-Admin/Reporter
+        window.autoFillReporterName = function() {
+            const pass = document.getElementById('admin-password').value.trim();
+            const badge = document.getElementById('detected-role-badge');
+            const reporterInput = document.getElementById('news-reporter');
+
+            if (pass === portalSettings.adminPass) {
+                badge.innerHTML = `<i class="fas fa-shield-alt"></i> সুপার অ্যাডমিন (প্রধান সম্পাদক) হিসেবে শনাক্ত হয়েছেন`;
+                badge.classList.remove('hidden');
+            } else {
+                const staff = (portalSettings.subAdmins || []).find(s => s.pass === pass);
+                if (staff) {
+                    badge.innerHTML = `<i class="fas fa-user-check"></i> ${staff.name} (${staff.role}) হিসেবে শনাক্ত হয়েছেন`;
+                    badge.classList.remove('hidden');
+                    if (!document.getElementById('edit-news-id').value) {
+                        reporterInput.value = `${staff.name}, ${staff.role}`;
+                    }
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        };
+
+        window.closeAdminModal = function() {
+            document.getElementById('admin-modal').classList.add('hidden');
+        };
+
+        // Save New or Edited Article
         window.handlePostNews = async function(e) {
             e.preventDefault();
             const passInput = document.getElementById('admin-password').value.trim();
-            if (passInput !== ADMIN_PASS) {
-                showToast('ভুল অ্যাডমিন পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিন (2424)।');
+            const isSuperAdmin = passInput === portalSettings.adminPass;
+            const matchedStaff = (portalSettings.subAdmins || []).find(s => s.pass === passInput);
+
+            if (!isSuperAdmin && !matchedStaff) {
+                showToast('ভুল অ্যাডমিন বা প্রতিনিধি পাসওয়ার্ড!');
+                return;
+            }
+
+            const editId = document.getElementById('edit-news-id').value;
+            if (editId && !isSuperAdmin) {
+                showToast('শুধুমাত্র প্রধান অ্যাডমিন প্রকাশিত সংবাদ এডিট করতে পারবেন!');
                 return;
             }
 
             const btn = document.getElementById('submit-news-btn');
+            const originalBtnHtml = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> প্রকাশ হচ্ছে...';
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> অপেক্ষা করুন...`;
 
             const title = document.getElementById('news-title').value.trim();
             const category = document.getElementById('news-category').value;
-            const reporter = document.getElementById('news-reporter').value.trim() || 'নিজস্ব প্রতিবেদক';
+            const defaultReporter = matchedStaff ? `${matchedStaff.name}, ${matchedStaff.role}` : 'নিজস্ব প্রতিবেদক';
+            const reporter = document.getElementById('news-reporter').value.trim() || defaultReporter;
             const content = document.getElementById('news-content').value.trim();
-            const isBreaking = document.getElementById('news-breaking').checked;
+            const isBreaking = isSuperAdmin ? document.getElementById('news-breaking').checked : false;
 
-            const newArticle = {
+            const articleData = {
                 title,
                 category,
                 reporter,
                 image: uploadedImageBase64 || 'https://placehold.co/800x450/111827/ffffff?text=Jonoprobaho24+News',
                 content,
                 isBreaking,
-                timestamp: Date.now()
+                timestamp: editId ? (allNews.find(n => n.id === editId)?.timestamp || Date.now()) : Date.now()
             };
 
             try {
-                if (db && currentUser) {
-                    const newsCol = collection(db, 'artifacts', appId, 'public', 'data', 'news_articles');
-                    await addDoc(newsCol, newArticle);
+                if (editId) {
+                    if (db && currentUser && !editId.startsWith('sample-') && !editId.startsWith('local-')) {
+                        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'news_articles', editId), articleData);
+                    } else {
+                        const idx = allNews.findIndex(n => n.id === editId);
+                        if (idx !== -1) {
+                            allNews[idx] = { ...allNews[idx], ...articleData };
+                            saveLocalNews(allNews);
+                            updateBreakingTicker();
+                            renderNews();
+                        }
+                    }
+                    closeReadModal();
+                    showToast('সংবাদটি সফলভাবে আপডেট করা হয়েছে!');
                 } else {
-                    newArticle.id = 'local-' + Date.now();
-                    allNews.unshift(newArticle);
-                    saveLocalNews(allNews);
-                    updateBreakingTicker();
-                    renderNews();
+                    if (db && currentUser) {
+                        const newsCol = collection(db, 'artifacts', appId, 'public', 'data', 'news_articles');
+                        await addDoc(newsCol, articleData);
+                    } else {
+                        articleData.id = 'local-' + Date.now();
+                        allNews.unshift(articleData);
+                        saveLocalNews(allNews);
+                        updateBreakingTicker();
+                        renderNews();
+                    }
+                    showToast('নতুন সংবাদটি সফলভাবে প্রকাশিত হয়েছে!');
                 }
 
                 document.getElementById('post-news-form').reset();
                 clearSelectedImage();
                 closeAdminModal();
-                showToast('সংবাদটি সফলভাবে প্রকাশিত হয়েছে!');
             } catch (error) {
-                console.error("Error adding news:", error);
-                showToast('সংবাদ প্রকাশ করতে সমস্যা হয়েছে!');
+                console.error("Save error:", error);
+                showToast('সংরক্ষণ করতে সমস্যা হয়েছে!');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane"></i> প্রকাশ করুন';
+                btn.innerHTML = originalBtnHtml;
             }
         };
 
-        // Delete News
+        // Delete News (Protected by Super Admin Password)
         window.deleteArticle = async function(id) {
+            const pass = document.getElementById('delete-confirm-pass')?.value.trim();
+            if (pass !== portalSettings.adminPass) {
+                showToast('ডিলিট করতে সুপার অ্যাডমিন পাসওয়ার্ড দিন!');
+                return;
+            }
             if (id.startsWith('sample-') || id.startsWith('local-')) {
                 allNews = allNews.filter(n => n.id !== id);
                 saveLocalNews(allNews);
@@ -690,15 +921,24 @@
                     showToast('সংবাদটি মুছে ফেলা হয়েছে।');
                 }
             } catch (err) {
-                console.error(err);
+                console.error("Delete error:", err);
                 showToast('মুছে ফেলতে সমস্যা হয়েছে।');
             }
         };
 
-        // Read Full News Modal
-        window.openReadModal = function(id) {
+        // Full News Reading Modal with Social Share & Edit Controls
+        window.openReadModal = function(id, updateHash = true) {
             const news = allNews.find(n => n.id === id);
             if (!news) return;
+
+            if (updateHash) {
+                history.replaceState(null, null, `#news=${id}`);
+            }
+
+            const baseUrl = window.location.href.split('#')[0];
+            const shareUrl = `${baseUrl}#news=${id}`;
+            const encodedUrl = encodeURIComponent(shareUrl);
+            const encodedTitle = encodeURIComponent(news.title);
 
             const modalContent = document.getElementById('modal-news-content');
             modalContent.innerHTML = `
@@ -708,40 +948,179 @@
                     <div><i class="fas fa-user-edit text-red-600 mr-1"></i> <strong>${news.reporter}</strong></div>
                     <div><i class="far fa-clock mr-1"></i> ${formatTime(news.timestamp)}</div>
                 </div>
-                <img src="${news.image}" onerror="this.src='https://placehold.co/800x450/111827/ffffff?text=Jonoprobaho24'" class="w-full max-h-96 object-cover rounded-xl mb-6 shadow">
+                
+                <!-- Full Non-Cropped Image Display -->
+                <div class="bg-gray-900 rounded-xl overflow-hidden mb-6 shadow flex justify-center">
+                    <img src="${news.image}" onerror="this.src='https://placehold.co/800x450/111827/ffffff?text=Jonoprobaho24'" class="max-h-[450px] w-auto object-contain">
+                </div>
+
                 <div class="text-gray-800 text-base sm:text-lg leading-relaxed whitespace-pre-line mb-8">
                     ${news.content}
                 </div>
-                <div class="border-t pt-4 flex flex-wrap justify-between items-center gap-3">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <button onclick="generatePhotoCard('${news.id}')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-xs sm:text-sm font-bold shadow transition flex items-center gap-1.5">
-                            <i class="fas fa-image"></i> ফটো কার্ড তৈরি করুন
+
+                <!-- Social Share & Link Copy Bar -->
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-5">
+                    <p class="text-xs font-bold text-gray-600 mb-2.5 uppercase tracking-wider">সংবাদটি শেয়ার করুন:</p>
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}" target="_blank" rel="noopener noreferrer" 
+                            class="bg-[#1877F2] hover:bg-blue-700 text-white px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-sm transition">
+                            <i class="fab fa-facebook-f"></i> ফেসবুক শেয়ার
+                        </a>
+                        <a href="https://api.whatsapp.com/send?text=${encodedTitle}%20${encodedUrl}" target="_blank" rel="noopener noreferrer" 
+                            class="bg-[#25D366] hover:bg-green-600 text-white px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-sm transition">
+                            <i class="fab fa-whatsapp"></i> হোয়াটসঅ্যাপ
+                        </a>
+                        <button onclick="copyExactNewsLink('${id}', '${news.title.replace(/'/g, "\\'")}')" 
+                            class="bg-gray-800 hover:bg-black text-white px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-sm transition">
+                            <i class="fas fa-link"></i> নিউজ লিংক কপি
                         </button>
-                        <button onclick="copyNewsLink('${news.title.replace(/'/g, "\\'")}')" class="bg-gray-100 hover:bg-gray-800 hover:text-white text-gray-800 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1">
-                            <i class="fas fa-copy"></i> শিরোনাম কপি
+                        <button onclick="generatePhotoCard('${news.id}')" 
+                            class="bg-red-600 hover:bg-red-700 text-white px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-sm transition">
+                            <i class="fas fa-image"></i> ফটো কার্ড
                         </button>
                     </div>
-                    <button onclick="deleteArticle('${news.id}')" class="text-xs text-red-600 hover:underline flex items-center gap-1">
-                        <i class="fas fa-trash-alt"></i> সংবাদটি মুছুন
+                </div>
+
+                <!-- Admin Edit & Delete Controls -->
+                <div class="border-t pt-4 flex flex-wrap justify-between items-center gap-2">
+                    <button onclick="openAdminModal('${news.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-1.5 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-sm transition">
+                        <i class="fas fa-edit"></i> সংবাদ এডিট করুন
                     </button>
+                    <div class="flex items-center gap-1.5">
+                        <input type="password" id="delete-confirm-pass" placeholder="সুপার পাসওয়ার্ড" class="w-28 px-2 py-1 border border-gray-300 rounded text-xs">
+                        <button onclick="deleteArticle('${news.id}')" class="bg-red-100 hover:bg-red-600 text-red-700 hover:text-white px-3 py-1 rounded text-xs font-bold transition flex items-center gap-1">
+                            <i class="fas fa-trash-alt"></i> মুছুন
+                        </button>
+                    </div>
                 </div>
             `;
             document.getElementById('read-modal').classList.remove('hidden');
         };
 
         window.closeReadModal = function() {
+            history.replaceState(null, null, ' ');
             document.getElementById('read-modal').classList.add('hidden');
         };
 
-        window.openAdminModal = function() {
-            document.getElementById('admin-modal').classList.remove('hidden');
+        // Portal Settings Modal Logic
+        let tempLogoBase64 = "";
+
+        window.openSettingsModal = function() {
+            tempLogoBase64 = portalSettings.customLogo || "";
+            document.getElementById('settings-current-pass').value = "";
+            document.getElementById('settings-new-pass').value = "";
+            renderStaffList();
+            document.getElementById('settings-modal').classList.remove('hidden');
         };
 
-        window.closeAdminModal = function() {
-            document.getElementById('admin-modal').classList.add('hidden');
+        function renderStaffList() {
+            const container = document.getElementById('staff-list-container');
+            const list = portalSettings.subAdmins || [];
+            if (list.length === 0) {
+                container.innerHTML = `<p class="text-gray-400 italic">এখনো কোনো প্রতিনিধি বা সহ-সম্পাদক নিয়োগ দেওয়া হয়নি।</p>`;
+                return;
+            }
+            container.innerHTML = list.map(staff => `
+                <div class="flex items-center justify-between bg-white px-2.5 py-1.5 rounded border">
+                    <div>
+                        <span class="font-bold text-gray-800">${staff.name}</span> 
+                        <span class="text-gray-500">(${staff.role})</span> — 
+                        <span class="text-red-600 font-mono">পাস: ${staff.pass}</span>
+                    </div>
+                    <button type="button" onclick="removeSubAdmin('${staff.id}')" class="text-red-500 hover:text-red-700 font-bold px-1.5">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        window.addSubAdmin = function() {
+            const name = document.getElementById('new-staff-name').value.trim();
+            const role = document.getElementById('new-staff-role').value.trim() || 'প্রতিনিধি';
+            const pass = document.getElementById('new-staff-pass').value.trim();
+
+            if (!name || !pass) {
+                showToast('প্রতিনিধির নাম এবং পাসওয়ার্ড দিন!');
+                return;
+            }
+            if (pass === portalSettings.adminPass || (portalSettings.subAdmins || []).some(s => s.pass === pass)) {
+                showToast('এই পাসওয়ার্ডটি ইতিমধ্যে ব্যবহৃত হচ্ছে, অন্য পাসওয়ার্ড দিন!');
+                return;
+            }
+
+            portalSettings.subAdmins = portalSettings.subAdmins || [];
+            portalSettings.subAdmins.push({ id: 'staff-' + Date.now(), name, role, pass });
+
+            document.getElementById('new-staff-name').value = '';
+            document.getElementById('new-staff-role').value = '';
+            document.getElementById('new-staff-pass').value = '';
+            renderStaffList();
+            showToast('তালিকায় যুক্ত হয়েছে! নিচে "সেটিংস সেভ করুন" বাটনে চাপুন।');
         };
 
-        // Photo Card Generator Logic
+        window.removeSubAdmin = function(id) {
+            portalSettings.subAdmins = (portalSettings.subAdmins || []).filter(s => s.id !== id);
+            renderStaffList();
+        };
+
+        window.closeSettingsModal = function() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        };
+
+        window.previewLogoImage = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 250;
+                    canvas.height = 250;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, 250, 250);
+                    tempLogoBase64 = canvas.toDataURL('image/png', 0.9);
+                    document.getElementById('logo-preview-img').src = tempLogoBase64;
+                    document.getElementById('logo-preview-wrap').classList.remove('hidden');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.resetDefaultLogo = function() {
+            tempLogoBase64 = "";
+            document.getElementById('settings-logo-file').value = "";
+            document.getElementById('logo-preview-wrap').classList.add('hidden');
+        };
+
+        window.savePortalSettings = function(e) {
+            e.preventDefault();
+            const currentPass = document.getElementById('settings-current-pass').value.trim();
+            if (currentPass !== portalSettings.adminPass) {
+                showToast('বর্তমান পাসওয়ার্ডটি সঠিক নয়!');
+                return;
+            }
+
+            const newPass = document.getElementById('settings-new-pass').value.trim();
+            if (newPass) {
+                portalSettings.adminPass = newPass;
+            }
+
+            portalSettings.slogan = document.getElementById('settings-slogan').value.trim() || "সত্যের পথে জনতার পাশে";
+            portalSettings.editor = document.getElementById('settings-editor').value.trim();
+            portalSettings.address = document.getElementById('settings-address').value.trim();
+            portalSettings.email = document.getElementById('settings-email').value.trim();
+            portalSettings.customLogo = tempLogoBase64;
+
+            localStorage.setItem('jonoprobaho24_settings', JSON.stringify(portalSettings));
+            applySettingsToUI();
+            updateBreakingTicker();
+            closeSettingsModal();
+            showToast('পোর্টাল সেটিংস সফলভাবে আপডেট হয়েছে!');
+        };
+
+        // Photo Card Generator
         window.generatePhotoCard = function(id) {
             const news = allNews.find(n => n.id === id);
             if (!news) return;
@@ -763,12 +1142,8 @@
 
             const img = new Image();
             img.crossOrigin = "Anonymous";
-            img.onload = function() {
-                drawCardContent(ctx, news, img);
-            };
-            img.onerror = function() {
-                drawCardContent(ctx, news, null);
-            };
+            img.onload = function() { drawCardContent(ctx, news, img); };
+            img.onerror = function() { drawCardContent(ctx, news, null); };
             img.src = news.image;
         };
 
@@ -776,22 +1151,24 @@
             if (img) {
                 const targetW = 1080;
                 const targetH = 550;
-                const scale = Math.max(targetW / img.width, targetH / img.height);
-                const x = (targetW / 2) - (img.width / 2) * scale;
-                const y = 34 + (targetH / 2) - (img.height / 2) * scale;
                 ctx.save();
                 ctx.beginPath();
                 ctx.rect(0, 34, targetW, targetH);
                 ctx.clip();
-                ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+                ctx.filter = 'blur(20px) brightness(0.45)';
+                ctx.drawImage(img, -40, 0, targetW + 80, targetH + 80);
+                ctx.filter = 'none';
+
+                const scale = Math.min(targetW / img.width, targetH / img.height);
+                const drawW = img.width * scale;
+                const drawH = img.height * scale;
+                const x = (targetW - drawW) / 2;
+                const y = 34 + (targetH - drawH) / 2;
+                ctx.drawImage(img, x, y, drawW, drawH);
                 ctx.restore();
             } else {
                 ctx.fillStyle = '#1f2937';
                 ctx.fillRect(0, 34, 1080, 550);
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 48px "Hind Siliguri", sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('জনপ্রবাহ২৪ সংবাদ', 540, 310);
             }
 
             // Category Badge
@@ -809,13 +1186,13 @@
             ctx.textAlign = 'right';
             ctx.fillText(dateStr, 1030, 592);
 
-            // Headline Text
+            // Headline
             ctx.fillStyle = '#111827';
             ctx.font = 'bold 48px "Hind Siliguri", sans-serif';
             ctx.textAlign = 'left';
             wrapText(ctx, news.title, 50, 680, 980, 66);
 
-            // Bottom Footer
+            // Footer Bar
             ctx.fillStyle = '#111827';
             ctx.fillRect(0, 920, 1080, 160);
             ctx.fillStyle = '#dc2626';
@@ -840,16 +1217,14 @@
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 44px "Hind Siliguri", sans-serif';
             ctx.fillText('জনপ্রবাহ', 190, 995);
-            
             const textWidth = ctx.measureText('জনপ্রবাহ').width;
             ctx.fillStyle = '#dc2626';
             ctx.fillText('২৪', 190 + textWidth, 995);
 
             ctx.fillStyle = '#d1d5db';
             ctx.font = '500 24px "Hind Siliguri", sans-serif';
-            ctx.fillText('সত্যের পথে জনতার পাশে • jonoprobaho24.com', 190, 1035);
+            ctx.fillText(`${portalSettings.slogan} • jonoprobaho24.com`, 190, 1035);
 
-            // CTA Badge
             ctx.fillStyle = '#dc2626';
             ctx.fillRect(790, 975, 240, 50);
             ctx.fillStyle = '#ffffff';
@@ -864,26 +1239,18 @@
             let lineCount = 0;
             for (let n = 0; n < words.length; n++) {
                 const testLine = line + words[n] + ' ';
-                const metrics = ctx.measureText(testLine);
-                if (metrics.width > maxWidth && n > 0) {
+                if (ctx.measureText(testLine).width > maxWidth && n > 0) {
                     ctx.fillText(line, x, y);
                     line = words[n] + ' ';
                     y += lineHeight;
                     lineCount++;
-                    if (lineCount >= 3) {
-                        line = line.trim() + '...';
-                        break;
-                    }
-                } else {
-                    line = testLine;
-                }
+                    if (lineCount >= 3) { line = line.trim() + '...'; break; }
+                } else { line = testLine; }
             }
             ctx.fillText(line, x, y);
         }
 
-        window.closePhotoCardModal = function() {
-            document.getElementById('photocard-modal').classList.add('hidden');
-        };
+        window.closePhotoCardModal = function() { document.getElementById('photocard-modal').classList.add('hidden'); };
 
         window.downloadPhotoCard = function() {
             const canvas = document.getElementById('photocard-canvas');
@@ -894,19 +1261,20 @@
             showToast('ফটো কার্ড ডাউনলোড হয়েছে!');
         };
 
-        // Copy to Clipboard
-        window.copyNewsLink = function(title) {
-            const textToCopy = `${title} - বিস্তারিত পড়ুন জনপ্রবাহ২৪-এ: https://jahidrayhanofficial67-ctrl.github.io/jonoprobaho24/`;
+        // Copy Exact Article Link
+        window.copyExactNewsLink = function(id, title) {
+            const baseUrl = window.location.href.split('#')[0];
+            const exactUrl = `${baseUrl}#news=${id}`;
+            const textToCopy = `${title}\nবিস্তারিত পড়ুন: ${exactUrl}`;
             const tempInput = document.createElement('textarea');
             tempInput.value = textToCopy;
             document.body.appendChild(tempInput);
             tempInput.select();
             document.execCommand('copy');
             document.body.removeChild(tempInput);
-            showToast('সংবাদের শিরোনাম ও লিংক কপি হয়েছে!');
+            showToast('সংবাদের সরাসরি লিংক কপি হয়েছে!');
         };
 
-        // Format Relative Time in Bengali
         function formatTime(timestamp) {
             if (!timestamp) return 'এইমাত্র';
             const diff = Math.floor((Date.now() - timestamp) / 60000);
@@ -917,17 +1285,13 @@
             return new Date(timestamp).toLocaleDateString('bn-BD');
         }
 
-        // Toast Notification
         function showToast(msg) {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = msg;
             toast.classList.remove('translate-y-24', 'opacity-0');
-            setTimeout(() => {
-                toast.classList.add('translate-y-24', 'opacity-0');
-            }, 3000);
+            setTimeout(() => { toast.classList.add('translate-y-24', 'opacity-0'); }, 3000);
         }
 
-        // Start App
         initApp();
     </script>
 </body>
