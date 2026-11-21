@@ -8,8 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Hind Siliguri & Tiro Bangla -->
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Hind Siliguri, Tiro Bangla & Galada (Calligraphy Masthead) -->
+    <link href="https://fonts.googleapis.com/css2?family=Galada&family=Hind+Siliguri:wght@400;500;600;700&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Hind Siliguri', sans-serif;
@@ -19,6 +19,9 @@
         .font-editorial {
             font-family: 'Tiro Bangla', 'Hind Siliguri', serif;
             letter-spacing: -0.01em;
+        }
+        .font-masthead {
+            font-family: 'Galada', 'Tiro Bangla', serif;
         }
         .smart-input {
             transition: all 0.25s ease;
@@ -40,6 +43,27 @@
         }
         .animate-ticker:hover {
             animation-play-state: paused;
+        }
+        @keyframes nationalWave {
+            0%, 100% { transform: translateX(-8%) scale(1); }
+            50% { transform: translateX(8%) scale(1.04); }
+        }
+        @keyframes mapFloat {
+            0%, 100% { transform: translate(0px, 0px) rotate(0deg); }
+            50% { transform: translate(18px, -4px) rotate(1.5deg); }
+        }
+        @keyframes shineSweep {
+            0% { transform: translateX(-120%) skewX(-20deg); }
+            100% { transform: translateX(260%) skewX(-20deg); }
+        }
+        .animate-national-wave {
+            animation: nationalWave 9s ease-in-out infinite;
+        }
+        .animate-map-float {
+            animation: mapFloat 11s ease-in-out infinite;
+        }
+        .animate-shine-sweep {
+            animation: shineSweep 6s ease-in-out infinite;
         }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -79,21 +103,36 @@
     </div>
 
     <!-- Main Header & Dynamic Brand Logo -->
-    <header class="bg-white shadow-sm py-3.5 px-4 border-b-2 border-red-600 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+    <header class="bg-white shadow-sm py-3.5 px-4 border-b-2 border-red-600 sticky top-0 z-40 relative overflow-hidden">
+        <!-- Animated National Background Layer -->
+        <div class="pointer-events-none absolute inset-0 overflow-hidden select-none">
+            <!-- Soft Bangladesh Green & Red National Wave -->
+            <div class="animate-national-wave absolute -inset-x-10 inset-y-0 bg-gradient-to-r from-emerald-600/[0.07] via-red-600/[0.08] to-emerald-700/[0.07]"></div>
+            <!-- Gentle Light Sweep -->
+            <div class="animate-shine-sweep absolute top-0 bottom-0 w-32 bg-gradient-to-r from-transparent via-red-500/[0.08] to-transparent"></div>
+            <!-- Floating Bangladesh Map & National Emblem SVG -->
+            <svg class="animate-map-float absolute right-4 sm:right-1/3 -top-2 h-24 sm:h-28 w-auto text-emerald-800/[0.09]" viewBox="0 0 200 260" fill="currentColor">
+                <path d="M55,15 L80,25 L95,50 L125,55 L155,45 L185,65 L195,95 L170,125 L165,165 L185,195 L195,245 L180,255 L165,240 L155,210 L130,200 L115,230 L90,235 L65,230 L45,215 L50,180 L25,160 L15,125 L35,90 L25,50 L40,25 Z"/>
+                <circle cx="108" cy="128" r="24" fill="#dc2626" fill-opacity="0.65"/>
+            </svg>
+        </div>
+
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3 relative z-10">
             <a href="#" onclick="resetToHome(); return false;" class="flex items-center gap-3 group">
-                <!-- Dynamic Logo Container -->
-                <div id="header-logo-container" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-4 border-red-600 p-0.5 bg-white shadow-md flex items-center justify-center shrink-0 overflow-hidden">
-                    <div class="w-full h-full rounded-full border-2 border-black flex flex-col items-center justify-center bg-white">
-                        <span class="text-[6px] sm:text-[7px] font-bold text-black leading-none tracking-tighter">সত্যের পথে জনতার পাশে</span>
-                        <div class="w-7 h-0.5 bg-red-600 my-0.5"></div>
-                        <span class="text-2xl sm:text-3xl font-black text-black leading-none -mt-0.5">জ</span>
-                        <span class="text-[7px] sm:text-[8px] font-extrabold text-black leading-none">জনপ্রবাহ<span class="text-red-600">24</span></span>
+                <div class="relative shrink-0">
+                    <span class="absolute -inset-1 rounded-full bg-red-500/20 animate-ping"></span>
+                    <div id="header-logo-container" class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full border-4 border-red-600 p-0.5 bg-white shadow-md flex items-center justify-center overflow-hidden">
+                        <div class="w-full h-full rounded-full border-2 border-black flex flex-col items-center justify-center bg-white">
+                            <span class="text-[6px] sm:text-[7px] font-bold text-black leading-none tracking-tighter">সত্যের পথে জনতার পাশে</span>
+                            <div class="w-7 h-0.5 bg-red-600 my-0.5"></div>
+                            <span class="text-2xl sm:text-3xl font-black text-black leading-none -mt-0.5">জ</span>
+                            <span class="text-[7px] sm:text-[8px] font-extrabold text-black leading-none">জনপ্রবাহ<span class="text-red-600">24</span></span>
+                        </div>
                     </div>
                 </div>
                 <div>
-                    <h1 id="header-portal-name" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-black leading-none">
-                        জনপ্রবাহ<span class="text-red-600">২৪</span>
+                    <h1 id="header-portal-name" class="font-masthead text-3xl sm:text-4xl tracking-tight text-black leading-none pt-1">
+                        জনপ্রবাহ<span class="text-red-600 font-sans font-black">২৪</span>
                     </h1>
                     <p id="header-portal-slogan" class="text-xs sm:text-sm font-semibold text-gray-600 mt-1">সত্যের পথে জনতার পাশে</p>
                 </div>
@@ -102,7 +141,7 @@
             <!-- Search Bar -->
             <div class="w-full md:w-80 relative">
                 <input type="text" id="search-input" onkeyup="searchNews()" placeholder="সংবাদ খুঁজুন..." 
-                    class="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 bg-gray-50">
+                    class="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 bg-white/90 backdrop-blur-xs">
                 <button onclick="searchNews()" class="absolute right-3 top-2.5 text-gray-400 hover:text-red-600">
                     <i class="fas fa-search"></i>
                 </button>
@@ -141,6 +180,87 @@
         </div>
     </div>
 
+    <!-- Auto Daily Greeting, Prayer & Sehri-Iftar Schedule Strip -->
+    <section class="max-w-7xl w-full mx-auto px-4 pt-4">
+        <!-- Optional Special Event / Eid Banner (Auto or Manual from Settings) -->
+        <div id="special-event-banner" class="hidden mb-3 bg-gradient-to-r from-red-700 via-amber-600 to-red-800 text-white p-3.5 rounded-2xl shadow-md border border-amber-300/40 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <span class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl shrink-0">🌙</span>
+                <div>
+                    <h4 id="special-event-title" class="font-editorial font-bold text-base sm:text-lg leading-tight">ঈদ মোবারক! জনপ্রবাহ২৪-এর পক্ষ থেকে সকল পাঠককে আন্তরিক শুভেচ্ছা</h4>
+                    <p id="special-event-sub" class="text-xs text-amber-100">সত্যের পথে জনতার পাশে — আপনার ও আপনার পরিবারের আনন্দময় ও নিরাপদ সময় কামনা করছি।</p>
+                </div>
+            </div>
+            <button onclick="openAutoDailyCard('eid')" class="bg-white text-red-700 hover:bg-amber-100 px-3.5 py-1.5 rounded-xl text-xs font-extrabold shadow transition shrink-0">
+                <i class="fas fa-image mr-1"></i> ঈদ কার্ড ডাউনলোড
+            </button>
+        </div>
+
+        <!-- Daily Auto Greeting + Live Prayer & Ramadan Timings -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-3.5 sm:p-4 grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-center">
+            <!-- Left: Time-Aware Auto Greeting (Good Morning / Good Night) -->
+            <div class="lg:col-span-5 flex items-center justify-between gap-3 bg-gradient-to-r from-slate-900 to-red-950 text-white p-3.5 rounded-xl">
+                <div class="flex items-center gap-3">
+                    <div id="auto-greeting-icon" class="w-11 h-11 rounded-full bg-amber-400/20 border border-amber-300/40 flex items-center justify-center text-2xl shrink-0">☀️</div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 id="auto-greeting-title" class="font-editorial font-bold text-lg text-amber-300 leading-tight">শুভ সকাল, বাংলাদেশ!</h3>
+                            <span class="text-[10px] bg-white/15 px-2 py-0.5 rounded-full text-gray-200">অটো আপডেট</span>
+                        </div>
+                        <p id="auto-greeting-msg" class="text-xs text-gray-200 mt-0.5 line-clamp-2">নতুন সকালের আলোয় আপনার দিনটি হোক সুন্দর, সফল ও কল্যাণময়।</p>
+                    </div>
+                </div>
+                <button onclick="openAutoDailyCard('greeting')" title="আজকের শুভেচ্ছা কার্ড ডাউনলোড করুন" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-xs font-bold shrink-0 shadow transition flex flex-col items-center">
+                    <i class="fas fa-download text-sm"></i>
+                    <span class="text-[10px] mt-0.5">কার্ড</span>
+                </button>
+            </div>
+
+            <!-- Right: Daily Prayer & Sehri-Iftar Timings (Bangladesh / Barishal-Dhaka) -->
+            <div class="lg:col-span-7 bg-emerald-50/70 border border-emerald-200 rounded-xl p-3">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <span class="text-xs font-extrabold text-emerald-900 flex items-center gap-1.5">
+                        <i class="fas fa-mosque text-emerald-700"></i> আজকের নামাজ ও সেহরি-ইফতারের সময়সূচী (<span id="prayer-city-label">ঢাকা ও পার্শ্ববর্তী এলাকা</span>)
+                    </span>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="openAutoDailyCard('prayer')" class="bg-emerald-700 hover:bg-emerald-800 text-white px-2.5 py-1 rounded-lg text-[11px] font-bold shadow-sm transition flex items-center gap-1">
+                            <i class="fas fa-image"></i> সময়সূচী কার্ড
+                        </button>
+                        <button onclick="openAutoDailyCard('night')" class="bg-indigo-900 hover:bg-indigo-950 text-white px-2.5 py-1 rounded-lg text-[11px] font-bold shadow-sm transition flex items-center gap-1">
+                            <i class="fas fa-moon"></i> শুভরাত্রি কার্ড
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5 text-center text-xs">
+                    <div class="bg-white rounded-lg py-1.5 px-1 border border-emerald-100 shadow-xs">
+                        <div class="text-[10px] text-gray-500 font-semibold">সেহরি শেষ / ফজর</div>
+                        <div id="pt-fajr" class="font-extrabold text-emerald-800">০৫:০২</div>
+                    </div>
+                    <div class="bg-white rounded-lg py-1.5 px-1 border border-emerald-100 shadow-xs">
+                        <div class="text-[10px] text-gray-500 font-semibold">যোহর</div>
+                        <div id="pt-dhuhr" class="font-extrabold text-gray-900">১১:৫২</div>
+                    </div>
+                    <div class="bg-white rounded-lg py-1.5 px-1 border border-emerald-100 shadow-xs">
+                        <div class="text-[10px] text-gray-500 font-semibold">আসর</div>
+                        <div id="pt-asr" class="font-extrabold text-gray-900">০৩:৩৫</div>
+                    </div>
+                    <div class="bg-red-50 rounded-lg py-1.5 px-1 border border-red-200 shadow-xs">
+                        <div class="text-[10px] text-red-700 font-bold">মাগরিব / ইফতার</div>
+                        <div id="pt-maghrib" class="font-extrabold text-red-700">০৫:১১</div>
+                    </div>
+                    <div class="bg-white rounded-lg py-1.5 px-1 border border-emerald-100 shadow-xs">
+                        <div class="text-[10px] text-gray-500 font-semibold">এশা</div>
+                        <div id="pt-isha" class="font-extrabold text-gray-900">০৬:২৮</div>
+                    </div>
+                    <div class="bg-amber-50 rounded-lg py-1.5 px-1 border border-amber-200 shadow-xs">
+                        <div class="text-[10px] text-amber-800 font-semibold">সূর্যোদয়</div>
+                        <div id="pt-sunrise" class="font-extrabold text-amber-900">০৬:১৮</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Main Content Area -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6">
         <div class="flex items-center justify-between border-b-2 border-gray-200 pb-2 mb-6">
@@ -169,7 +289,7 @@
         <div class="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
                 <div class="flex items-center gap-2 mb-3">
-                    <span class="text-2xl font-extrabold text-white">জনপ্রবাহ<span class="text-red-600">২৪</span></span>
+                    <span class="font-masthead text-3xl text-white">জনপ্রবাহ<span class="text-red-600 font-sans font-black">২৪</span></span>
                 </div>
                 <p id="footer-about-text" class="text-sm text-gray-400 leading-relaxed">
                     "সত্যের পথে জনতার পাশে" — বস্তুনিষ্ঠ ও নিরপেক্ষ সংবাদ পরিবেশনে প্রতিশ্রুতিবদ্ধ একটি আধুনিক অনলাইন নিউজ পোর্টাল।
@@ -344,6 +464,20 @@
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600">
                 </div>
 
+                <!-- Special Event / Eid Banner Auto Controller -->
+                <div class="bg-amber-50 p-3.5 rounded-xl border border-amber-200 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold text-amber-900 flex items-center gap-1.5">
+                            <i class="fas fa-star-and-crescent text-red-600"></i> ঈদ / বিশেষ দিবস অটো শুভেচ্ছা ব্যানার
+                        </span>
+                        <label class="inline-flex items-center cursor-pointer gap-1.5 text-xs font-bold text-red-700">
+                            <input type="checkbox" id="settings-event-active" class="w-4 h-4 accent-red-600"> চালু রাখুন
+                        </label>
+                    </div>
+                    <input type="text" id="settings-event-title" placeholder="বিশেষ শিরোনাম (যেমন: পবিত্র ঈদুল ফিতর মোবারক!)" class="w-full px-2.5 py-1.5 border border-amber-300 rounded-lg text-xs bg-white font-bold">
+                    <input type="text" id="settings-event-sub" placeholder="শুভেচ্ছা বার্তা লিখুন..." class="w-full px-2.5 py-1.5 border border-amber-300 rounded-lg text-xs bg-white">
+                </div>
+
                 <!-- Logo / Profile Photo Upload -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">পোর্টালের লোগো / প্রোফাইল ছবি পরিবর্তন করুন</label>
@@ -392,18 +526,23 @@
 
                 <!-- Sub-Admin / Reporter Management Section -->
                 <div class="bg-gray-50 p-3.5 rounded-lg border border-gray-200 space-y-3">
-                    <h4 class="text-sm font-bold text-black flex items-center gap-1.5">
-                        <i class="fas fa-users-cog text-red-600"></i> অ্যাডমিন / প্রতিনিধি নিয়োগ দিন
-                    </h4>
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-sm font-bold text-black flex items-center gap-1.5">
+                            <i class="fas fa-users-cog text-red-600"></i> অ্যাডমিন / প্রতিনিধি ব্যবস্থাপনা
+                        </h4>
+                        <span id="staff-edit-mode-badge" class="hidden text-[11px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded">এডিট মোড চালু</span>
+                    </div>
+                    <input type="hidden" id="edit-staff-index" value="-1">
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <input type="text" id="new-staff-name" placeholder="নাম (যেমন: রাকিব হাসান)" class="px-2.5 py-1.5 border border-gray-300 rounded text-xs">
-                        <input type="text" id="new-staff-role" placeholder="পদবি (যেমন: জেলা প্রতিনিধি)" class="px-2.5 py-1.5 border border-gray-300 rounded text-xs">
+                        <input type="text" id="new-staff-name" placeholder="নাম (যেমন: রাকিব হাসান)" class="px-2.5 py-1.5 border border-gray-300 rounded text-xs bg-white">
+                        <input type="text" id="new-staff-role" placeholder="পদবি (যেমন: জেলা প্রতিনিধি)" class="px-2.5 py-1.5 border border-gray-300 rounded text-xs bg-white">
                         <div class="flex gap-1">
-                            <input type="text" id="new-staff-pass" placeholder="পাসওয়ার্ড" class="w-full px-2.5 py-1.5 border border-gray-300 rounded text-xs">
-                            <button type="button" onclick="addSubAdmin()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold shrink-0">যুক্ত</button>
+                            <input type="text" id="new-staff-pass" placeholder="পাসওয়ার্ড" class="w-full px-2.5 py-1.5 border border-gray-300 rounded text-xs bg-white">
+                            <button type="button" id="staff-submit-btn" onclick="addOrUpdateSubAdmin()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold shrink-0">যুক্ত</button>
+                            <button type="button" id="staff-cancel-btn" onclick="cancelEditSubAdmin()" class="hidden bg-gray-300 hover:bg-gray-400 text-gray-800 px-2 py-1.5 rounded text-xs font-bold shrink-0">✕</button>
                         </div>
                     </div>
-                    <div id="staff-list-container" class="space-y-1.5 max-h-32 overflow-y-auto text-xs"></div>
+                    <div id="staff-list-container" class="space-y-1.5 max-h-40 overflow-y-auto text-xs"></div>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-3 border-t">
@@ -433,19 +572,13 @@
             </div>
 
             <!-- Live Editable Fields for Each News Card -->
-            <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-2.5 mb-3 text-xs">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <div>
-                        <label class="block font-bold text-gray-700 mb-1">তারিখ পরিবর্তন:</label>
-                        <input type="text" id="pc-edit-date" oninput="redrawActivePhotoCard()" class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg bg-white font-semibold">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-gray-700 mb-1">ক্যাটাগরি ব্যাজ:</label>
-                        <input type="text" id="pc-edit-cat" oninput="redrawActivePhotoCard()" class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg bg-white font-semibold">
-                    </div>
+            <div id="pc-news-editor-fields" class="bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-2.5 mb-3 text-xs">
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">তারিখ পরিবর্তন:</label>
+                    <input type="text" id="pc-edit-date" oninput="redrawActivePhotoCard()" class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg bg-white font-semibold">
                 </div>
                 <div>
-                    <label class="block font-bold text-gray-700 mb-1">শিরোনাম (প্রথম অংশ লাল, বাকি অংশ গাঢ় নীল রঙে দেখাবে):</label>
+                    <label class="block font-bold text-gray-700 mb-1">শিরোনাম (প্রথম অংশ লাল, বাকি অংশ গাঢ় নীল/কালো রঙে দেখাবে):</label>
                     <input type="text" id="pc-edit-title" oninput="redrawActivePhotoCard()" class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg bg-white font-bold text-gray-900">
                 </div>
             </div>
@@ -484,7 +617,20 @@
             address: "সদর রোড, বাকেরগঞ্জ, বরিশাল",
             email: "news@jonoprobaho24.com",
             customLogo: "",
-            subAdmins: []
+            subAdmins: [],
+            eventActive: false,
+            eventTitle: "ঈদ মোবারক! জনপ্রবাহ২৪-এর পক্ষ থেকে সকল পাঠককে আন্তরিক শুভেচ্ছা",
+            eventSub: "সত্যের পথে জনতার পাশে — আপনার ও আপনার পরিবারের আনন্দময় ও নিরাপদ সময় কামনা করছি।"
+        };
+
+        let dailyPrayerTimes = {
+            fajr: "০৫:০২",
+            sunrise: "০৬:১৮",
+            dhuhr: "১১:৫২",
+            asr: "০৩:৩৫",
+            maghrib: "০৫:১১",
+            isha: "০৬:২৮",
+            city: "ঢাকা ও পার্শ্ববর্তী এলাকা"
         };
 
         let savedAuthSession = null;
@@ -498,7 +644,7 @@
                     return parsed;
                 }
                 if (parsed.role === 'staff') {
-                    const validStaff = (portalSettings.subAdmins || []).find(s => s.pass === parsed.pass);
+                    const validStaff = (portalSettings.subAdmins || []).find(s => s.pass === parsed.pass && s.active !== false);
                     if (validStaff) return { ...parsed, name: validStaff.name, staffRole: validStaff.role };
                 }
                 localStorage.removeItem('jonoprobaho24_auth_session');
@@ -558,6 +704,19 @@
             document.getElementById('settings-address').value = portalSettings.address;
             document.getElementById('settings-email').value = portalSettings.email;
 
+            document.getElementById('settings-event-active').checked = Boolean(portalSettings.eventActive);
+            document.getElementById('settings-event-title').value = portalSettings.eventTitle || '';
+            document.getElementById('settings-event-sub').value = portalSettings.eventSub || '';
+
+            const eventBanner = document.getElementById('special-event-banner');
+            if (portalSettings.eventActive) {
+                eventBanner.classList.remove('hidden');
+                document.getElementById('special-event-title').innerText = portalSettings.eventTitle;
+                document.getElementById('special-event-sub').innerText = portalSettings.eventSub;
+            } else {
+                eventBanner.classList.add('hidden');
+            }
+
             const logoContainer = document.getElementById('header-logo-container');
             if (portalSettings.customLogo) {
                 logoContainer.innerHTML = `<img src="${portalSettings.customLogo}" class="w-full h-full object-cover rounded-full">`;
@@ -572,6 +731,65 @@
                         <span class="text-[7px] sm:text-[8px] font-extrabold text-black leading-none">জনপ্রবাহ<span class="text-red-600">24</span></span>
                     </div>`;
             }
+        }
+
+        // Auto Time-Aware Daily Greeting (Good Morning / Good Afternoon / Good Night)
+        function updateAutoDailyGreeting() {
+            const hour = new Date().getHours();
+            const titleEl = document.getElementById('auto-greeting-title');
+            const msgEl = document.getElementById('auto-greeting-msg');
+            const iconEl = document.getElementById('auto-greeting-icon');
+
+            if (hour >= 5 && hour < 12) {
+                iconEl.innerText = '☀️';
+                titleEl.innerText = 'শুভ সকাল, বাংলাদেশ!';
+                msgEl.innerText = 'নতুন সকালের স্নিগ্ধ আলোয় আপনার দিনটি হোক সুন্দর, সফল ও কল্যাণময়।';
+            } else if (hour >= 12 && hour < 17) {
+                iconEl.innerText = '🌤️';
+                titleEl.innerText = 'শুভ অপরাহ্ণ, পাঠক!';
+                msgEl.innerText = 'সত্য ও বস্তুনিষ্ঠ সংবাদের সাথে থাকতে জনপ্রবাহ২৪-এ আপনাকে স্বাগতম।';
+            } else if (hour >= 17 && hour < 21) {
+                iconEl.innerText = '🌆';
+                titleEl.innerText = 'শুভ সন্ধ্যা, বাংলাদেশ!';
+                msgEl.innerText = 'সারাদিনের গুরুত্বপূর্ণ সব খবরাখবর জানতে চোখ রাখুন জনপ্রবাহ২৪-এ।';
+            } else {
+                iconEl.innerText = '🌙';
+                titleEl.innerText = 'শুভরাত্রি, বাংলাদেশ!';
+                msgEl.innerText = 'দিনের ক্লান্তি শেষে প্রশান্তির ঘুম ও সুন্দর আগামীকালের প্রত্যাশা রইলো।';
+            }
+        }
+
+        // Fetch Daily Prayer & Sehri-Iftar Times Automatically (Aladhan API for Dhaka/Bangladesh)
+        async function fetchDailyPrayerTimes() {
+            try {
+                const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Dhaka&country=Bangladesh&method=1');
+                const data = await res.json();
+                if (data && data.data && data.data.timings) {
+                    const t = data.data.timings;
+                    const format12Bn = (time24) => {
+                        const clean = time24.split(' ')[0];
+                        let [h, m] = clean.split(':').map(Number);
+                        if (h > 12) h -= 12;
+                        if (h === 0) h = 12;
+                        return `${toBnNum(String(h).padStart(2, '0'))}:${toBnNum(String(m).padStart(2, '0'))}`;
+                    };
+                    dailyPrayerTimes = {
+                        fajr: format12Bn(t.Fajr),
+                        sunrise: format12Bn(t.Sunrise),
+                        dhuhr: format12Bn(t.Dhuhr),
+                        asr: format12Bn(t.Asr),
+                        maghrib: format12Bn(t.Maghrib),
+                        isha: format12Bn(t.Isha),
+                        city: "ঢাকা ও পার্শ্ববর্তী এলাকা"
+                    };
+                    document.getElementById('pt-fajr').innerText = dailyPrayerTimes.fajr;
+                    document.getElementById('pt-sunrise').innerText = dailyPrayerTimes.sunrise;
+                    document.getElementById('pt-dhuhr').innerText = dailyPrayerTimes.dhuhr;
+                    document.getElementById('pt-asr').innerText = dailyPrayerTimes.asr;
+                    document.getElementById('pt-maghrib').innerText = dailyPrayerTimes.maghrib;
+                    document.getElementById('pt-isha').innerText = dailyPrayerTimes.isha;
+                }
+            } catch (e) {}
         }
 
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -619,6 +837,8 @@
 
         async function initApp() {
             loadSettings();
+            updateAutoDailyGreeting();
+            fetchDailyPrayerTimes();
             allNews = loadLocalNews();
             updateBreakingTicker();
             renderNews();
@@ -797,7 +1017,6 @@
             const sideNews = filtered.slice(1, 4);
             const restNews = filtered.slice(4);
 
-            // Main Lead Card
             let leadHtml = `
                 <div class="lg:col-span-7 bg-white rounded-2xl overflow-hidden shadow-md border border-gray-200 hover:shadow-xl transition flex flex-col">
                     <div onclick="openReadModal('${leadNews.id}')" class="relative h-64 sm:h-80 bg-gray-900 cursor-pointer overflow-hidden group">
@@ -850,7 +1069,6 @@
             }
             leadContainer.innerHTML = leadHtml;
 
-            // Regular Grid Cards
             restNews.forEach(item => {
                 gridContainer.innerHTML += `
                     <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-lg transition flex flex-col">
@@ -954,7 +1172,6 @@
                         ${news.content}
                     </div>
 
-                    <!-- Share, Like & Photo Card Action Bar -->
                     <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-200 flex flex-wrap items-center justify-between gap-3">
                         <div class="flex items-center gap-2">
                             <button onclick="toggleLikeNews('${news.id}')" class="${isLiked ? 'bg-red-600 text-white' : 'bg-white text-red-600 border border-red-200 hover:bg-red-50'} px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1.5">
@@ -977,7 +1194,6 @@
                         </div>
                     </div>
 
-                    <!-- Reader Comments Section -->
                     <div class="pt-4 border-t border-gray-200 space-y-3">
                         <h4 class="font-bold text-gray-900 text-sm flex items-center gap-1.5">
                             <i class="fas fa-comments text-red-600"></i> পাঠকের মতামত (${toBnNum(comments.length)})
@@ -1228,6 +1444,11 @@
             }
             const staff = (portalSettings.subAdmins || []).find(s => s.pass === pass);
             if (staff) {
+                if (staff.active === false) {
+                    badge.classList.remove('hidden');
+                    badge.innerHTML = `<i class="fas fa-ban mr-1 text-red-600"></i> এই প্রতিনিধি আইডিটি সাময়িকভাবে স্থগিত আছে`;
+                    return;
+                }
                 badge.classList.remove('hidden');
                 badge.innerHTML = `<i class="fas fa-user-check mr-1"></i> প্রতিনিধি: ${staff.name} (${staff.role})`;
                 document.getElementById('news-reporter').value = `${staff.name}, ${staff.role}`;
@@ -1244,7 +1465,7 @@
                 saveAuthSession(sess);
                 return sess;
             }
-            const staff = (portalSettings.subAdmins || []).find(s => s.pass === inputPass);
+            const staff = (portalSettings.subAdmins || []).find(s => s.pass === inputPass && s.active !== false);
             if (staff) {
                 const sess = { role: 'staff', pass: inputPass, name: staff.name, staffRole: staff.role };
                 saveAuthSession(sess);
@@ -1258,7 +1479,7 @@
             const passVal = document.getElementById('admin-password').value.trim();
             const authUser = verifyAdminOrStaff(passVal);
             if (!authUser) {
-                showToast('ভুল পাসওয়ার্ড! সঠিক অ্যাডমিন বা প্রতিনিধি পাসওয়ার্ড দিন।');
+                showToast('ভুল পাসওয়ার্ড অথবা আইডি স্থগিত আছে!');
                 return;
             }
 
@@ -1345,6 +1566,7 @@
 
         window.openSettingsModal = function() {
             selectedLogoDataUrl = '';
+            cancelEditSubAdmin();
             const active = getActiveSession();
             const passWrap = document.getElementById('settings-password-wrapper');
             if (active && active.role === 'super') {
@@ -1402,36 +1624,89 @@
                 container.innerHTML = `<p class="text-gray-400 italic">এখনো কোনো প্রতিনিধি নিয়োগ দেওয়া হয়নি।</p>`;
                 return;
             }
-            container.innerHTML = list.map((s, idx) => `
-                <div class="bg-white px-3 py-2 rounded-lg border border-gray-200 flex items-center justify-between">
+            container.innerHTML = list.map((s, idx) => {
+                const isActive = s.active !== false;
+                return `
+                <div class="bg-white px-3 py-2 rounded-lg border ${isActive ? 'border-gray-200' : 'border-amber-300 bg-amber-50/40'} flex flex-wrap items-center justify-between gap-2">
                     <div>
                         <strong class="text-gray-900">${s.name}</strong> <span class="text-gray-500">(${s.role})</span>
-                        <span class="ml-2 bg-gray-100 text-gray-700 px-2 py-0.5 rounded font-mono">পাস: ${s.pass}</span>
+                        <span class="ml-1.5 bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded font-mono">পাস: ${s.pass}</span>
+                        ${!isActive ? `<span class="ml-1 bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded text-[10px] font-bold">স্থগিত</span>` : ''}
                     </div>
-                    <button type="button" onclick="removeSubAdmin(${idx})" class="text-red-600 hover:text-red-800 font-bold">বাতিল</button>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="editSubAdmin(${idx})" class="text-blue-600 hover:text-blue-800 font-bold" title="সম্পাদনা করুন"><i class="fas fa-edit"></i> এডিট</button>
+                        <button type="button" onclick="toggleSubAdminStatus(${idx})" class="${isActive ? 'text-amber-600 hover:text-amber-800' : 'text-green-600 hover:text-green-800'} font-bold">${isActive ? 'স্থগিত' : 'চালু'}</button>
+                        <button type="button" onclick="removeSubAdmin(${idx})" class="text-red-600 hover:text-red-800 font-bold">মুছুন</button>
+                    </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
-        window.addSubAdmin = function() {
+        window.addOrUpdateSubAdmin = function() {
             const name = document.getElementById('new-staff-name').value.trim();
             const role = document.getElementById('new-staff-role').value.trim() || 'প্রতিনিধি';
             const pass = document.getElementById('new-staff-pass').value.trim();
+            const editIdx = Number(document.getElementById('edit-staff-index').value);
+
             if (!name || !pass) {
                 showToast('প্রতিনিধির নাম ও পাসওয়ার্ড লিখুন!');
                 return;
             }
             if (!Array.isArray(portalSettings.subAdmins)) portalSettings.subAdmins = [];
-            portalSettings.subAdmins.push({ name, role, pass });
+
+            if (editIdx >= 0 && portalSettings.subAdmins[editIdx]) {
+                const prevActive = portalSettings.subAdmins[editIdx].active !== false;
+                portalSettings.subAdmins[editIdx] = { name, role, pass, active: prevActive };
+                showToast('প্রতিনিধির তথ্য আপডেট হয়েছে! নিচে "সেটিংস সেভ করুন" চাপুন।');
+            } else {
+                portalSettings.subAdmins.push({ name, role, pass, active: true });
+                showToast('তালিকায় যুক্ত হয়েছে! নিচে "সেটিংস সেভ করুন" বাটনে চাপুন।');
+            }
+
+            cancelEditSubAdmin();
+            renderStaffList();
+        };
+
+        window.editSubAdmin = function(idx) {
+            const staff = portalSettings.subAdmins[idx];
+            if (!staff) return;
+            document.getElementById('edit-staff-index').value = idx;
+            document.getElementById('new-staff-name').value = staff.name || '';
+            document.getElementById('new-staff-role').value = staff.role || '';
+            document.getElementById('new-staff-pass').value = staff.pass || '';
+            document.getElementById('staff-submit-btn').innerText = 'আপডেট';
+            document.getElementById('staff-submit-btn').classList.replace('bg-red-600', 'bg-blue-600');
+            document.getElementById('staff-cancel-btn').classList.remove('hidden');
+            document.getElementById('staff-edit-mode-badge').classList.remove('hidden');
+        };
+
+        window.cancelEditSubAdmin = function() {
+            document.getElementById('edit-staff-index').value = '-1';
             document.getElementById('new-staff-name').value = '';
             document.getElementById('new-staff-role').value = '';
             document.getElementById('new-staff-pass').value = '';
+            const btn = document.getElementById('staff-submit-btn');
+            if (btn) {
+                btn.innerText = 'যুক্ত';
+                btn.classList.replace('bg-blue-600', 'bg-red-600');
+            }
+            const cancelBtn = document.getElementById('staff-cancel-btn');
+            if (cancelBtn) cancelBtn.classList.add('hidden');
+            const badge = document.getElementById('staff-edit-mode-badge');
+            if (badge) badge.classList.add('hidden');
+        };
+
+        window.toggleSubAdminStatus = function(idx) {
+            const staff = portalSettings.subAdmins[idx];
+            if (!staff) return;
+            staff.active = staff.active === false ? true : false;
             renderStaffList();
-            showToast('তালিকায় যুক্ত হয়েছে! নিচে "সেটিংস সেভ করুন" বাটনে চাপুন।');
+            showToast(staff.active ? 'প্রতিনিধি চালু করা হয়েছে (সেভ চাপুন)' : 'প্রতিনিধি স্থগিত করা হয়েছে (সেভ চাপুন)');
         };
 
         window.removeSubAdmin = function(idx) {
             portalSettings.subAdmins.splice(idx, 1);
+            cancelEditSubAdmin();
             renderStaffList();
         };
 
@@ -1455,6 +1730,10 @@
             portalSettings.address = document.getElementById('settings-address').value.trim() || portalSettings.address;
             portalSettings.email = document.getElementById('settings-email').value.trim() || portalSettings.email;
 
+            portalSettings.eventActive = document.getElementById('settings-event-active').checked;
+            portalSettings.eventTitle = document.getElementById('settings-event-title').value.trim() || portalSettings.eventTitle;
+            portalSettings.eventSub = document.getElementById('settings-event-sub').value.trim() || portalSettings.eventSub;
+
             if (selectedLogoDataUrl === 'DEFAULT') {
                 portalSettings.customLogo = '';
             } else if (selectedLogoDataUrl) {
@@ -1475,7 +1754,140 @@
             showToast('পোর্টালের সকল সেটিংস সফলভাবে সেভ হয়েছে!');
         };
 
-        // Photo Card Generator (Modern International 1:1 Editorial Branding Template)
+        // Auto Daily Greeting / Prayer / Night / Eid Photo Card Generator (1:1)
+        window.openAutoDailyCard = function(type) {
+            activeCardNews = null;
+            document.getElementById('pc-news-editor-fields').classList.add('hidden');
+            document.getElementById('photocard-modal').classList.remove('hidden');
+
+            const canvas = document.getElementById('photocard-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 1080;
+            canvas.height = 1080;
+
+            const todayDate = new Date().toLocaleDateString('bn-BD', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            const W = 1080;
+            const H = 1080;
+
+            // Theme colors per card type
+            let bg1 = '#0f172a', bg2 = '#1e3a8a', accent = '#f59e0b', badge = 'শুভ সকাল', heading = 'শুভ সকাল, বাংলাদেশ!', sub = 'নতুন সকালের আলোয় আপনার দিনটি হোক সুন্দর, সফল ও কল্যাণময়।', emoji = '☀️';
+            if (type === 'night') {
+                bg1 = '#020617'; bg2 = '#1e1b4b'; accent = '#38bdf8'; badge = 'শুভরাত্রি';
+                heading = 'শুভরাত্রি, বাংলাদেশ!';
+                sub = 'সারাদিনের ক্লান্তি শেষে প্রশান্তির ঘুম ও সুন্দর আগামীকালের প্রত্যাশা রইলো।';
+                emoji = '🌙';
+            } else if (type === 'prayer') {
+                bg1 = '#064e3b'; bg2 = '#022c22'; accent = '#fbbf24'; badge = 'নামাজ ও সেহরি-ইফতার';
+                heading = 'আজকের নামাজ ও সেহরি-ইফতারের সময়সূচী';
+                sub = dailyPrayerTimes.city;
+                emoji = '🕌';
+            } else if (type === 'eid') {
+                bg1 = '#7f1d1d'; bg2 = '#450a0a'; accent = '#fbbf24'; badge = 'বিশেষ শুভেচ্ছা';
+                heading = portalSettings.eventTitle || 'ঈদ মোবারক!';
+                sub = portalSettings.eventSub || 'সত্যের পথে জনতার পাশে — আপনার ও আপনার পরিবারের আনন্দময় সময় কামনা করছি।';
+                emoji = '🌙✨';
+            }
+
+            const grad = ctx.createLinearGradient(0, 0, W, H);
+            grad.addColorStop(0, bg1);
+            grad.addColorStop(1, bg2);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, W, H);
+
+            // Decorative Outer Gold/Red Border
+            ctx.strokeStyle = accent;
+            ctx.lineWidth = 8;
+            ctx.strokeRect(36, 36, W - 72, H - 72);
+
+            // Top Centered Masthead ("জনপ্রবাহ২৪")
+            ctx.font = '74px "Galada", "Tiro Bangla", serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.fillText('জনপ্রবাহ২৪', W / 2, 130);
+
+            ctx.font = '600 22px "Hind Siliguri", sans-serif';
+            ctx.fillStyle = accent;
+            ctx.fillText(portalSettings.slogan || 'সত্যের পথে জনতার পাশে', W / 2, 168);
+
+            // Date Pill
+            ctx.fillStyle = 'rgba(255,255,255,0.12)';
+            ctx.beginPath();
+            ctx.roundRect(W / 2 - 260, 195, 520, 48, 24);
+            ctx.fill();
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 23px "Hind Siliguri", sans-serif';
+            ctx.fillText(todayDate, W / 2, 227);
+
+            // Emoji Emblem
+            ctx.font = '96px sans-serif';
+            ctx.fillText(emoji, W / 2, 365);
+
+            // Main Heading
+            ctx.fillStyle = accent;
+            ctx.font = 'bold 54px "Tiro Bangla", "Hind Siliguri", serif';
+            ctx.fillText(heading, W / 2, 460);
+
+            if (type === 'prayer') {
+                const rows = [
+                    { label: 'সেহরির শেষ সময় / ফজর', time: dailyPrayerTimes.fajr },
+                    { label: 'সূর্যোদয়', time: dailyPrayerTimes.sunrise },
+                    { label: 'যোহর', time: dailyPrayerTimes.dhuhr },
+                    { label: 'আসর', time: dailyPrayerTimes.asr },
+                    { label: 'মাগরিব / ইফতারের সময়', time: dailyPrayerTimes.maghrib, highlight: true },
+                    { label: 'এশা', time: dailyPrayerTimes.isha }
+                ];
+                let ry = 520;
+                rows.forEach(r => {
+                    ctx.fillStyle = r.highlight ? '#dc2626' : 'rgba(255,255,255,0.12)';
+                    ctx.beginPath();
+                    ctx.roundRect(140, ry, W - 280, 62, 14);
+                    ctx.fill();
+
+                    ctx.textAlign = 'left';
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 28px "Hind Siliguri", sans-serif';
+                    ctx.fillText(r.label, 175, ry + 41);
+
+                    ctx.textAlign = 'right';
+                    ctx.fillStyle = r.highlight ? '#fde047' : accent;
+                    ctx.font = '900 32px "Hind Siliguri", sans-serif';
+                    ctx.fillText(r.time, W - 175, ry + 42);
+                    ry += 74;
+                });
+            } else {
+                // Wrapped Subtitle Message
+                ctx.fillStyle = '#f1f5f9';
+                ctx.font = '600 34px "Hind Siliguri", sans-serif';
+                ctx.textAlign = 'center';
+                const words = sub.split(' ');
+                let line = '', ly = 550;
+                words.forEach(w => {
+                    const test = line + w + ' ';
+                    if (ctx.measureText(test).width > W - 220) {
+                        ctx.fillText(line.trim(), W / 2, ly);
+                        line = w + ' ';
+                        ly += 52;
+                    } else {
+                        line = test;
+                    }
+                });
+                if (line.trim()) ctx.fillText(line.trim(), W / 2, ly);
+            }
+
+            // Bottom Footer Bar
+            const barY = H - 108;
+            ctx.fillStyle = '#dc2626';
+            ctx.beginPath();
+            ctx.roundRect(70, barY, W - 140, 52, 12);
+            ctx.fill();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 22px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('fb & yt: /jonoprobaho24   |   jonoprobaho24.com', W / 2, barY + 34);
+        };
+
+        // Photo Card Generator (Jonokontho Calligraphy Masthead Centered + Clean International 1:1 Design)
         let activeCardNews = null;
         let activeCardImage = null;
 
@@ -1483,6 +1895,7 @@
             const news = allNews.find(n => n.id === id);
             if (!news) return;
 
+            document.getElementById('pc-news-editor-fields').classList.remove('hidden');
             activeCardNews = news;
             activeCardImage = null;
 
@@ -1491,7 +1904,6 @@
             });
 
             document.getElementById('pc-edit-date').value = defaultDate;
-            document.getElementById('pc-edit-cat').value = news.category || 'সর্বশেষ';
             document.getElementById('pc-edit-title').value = news.title || '';
 
             document.getElementById('photocard-modal').classList.remove('hidden');
@@ -1519,7 +1931,6 @@
 
             const cardData = {
                 dateStr: document.getElementById('pc-edit-date').value.trim(),
-                category: document.getElementById('pc-edit-cat').value.trim() || 'সর্বশেষ',
                 title: document.getElementById('pc-edit-title').value.trim() || activeCardNews.title
             };
 
@@ -1543,10 +1954,10 @@
                 else ctx.lineTo(p[0], p[1]);
             });
             ctx.closePath();
-            ctx.fillStyle = 'rgba(30, 58, 138, 0.045)';
+            ctx.fillStyle = 'rgba(30, 58, 138, 0.04)';
             ctx.fill();
             ctx.lineWidth = 2;
-            ctx.strokeStyle = 'rgba(220, 38, 38, 0.06)';
+            ctx.strokeStyle = 'rgba(220, 38, 38, 0.05)';
             ctx.stroke();
             ctx.restore();
         }
@@ -1555,134 +1966,119 @@
             const W = 1080;
             const H = 1080;
 
-            // 1. Clean White, Soft Sky-Blue & Crimson Accent Background
+            // 1. Clean White & Soft Newspaper Background
             const bgGrad = ctx.createLinearGradient(0, 0, W, H);
             bgGrad.addColorStop(0, '#ffffff');
-            bgGrad.addColorStop(0.55, '#f8fafc');
-            bgGrad.addColorStop(1, '#eff6ff');
+            bgGrad.addColorStop(0.6, '#f8fafc');
+            bgGrad.addColorStop(1, '#f1f5f9');
             ctx.fillStyle = bgGrad;
             ctx.fillRect(0, 0, W, H);
 
-            // Top Accent Stripe
-            ctx.fillStyle = '#0f172a';
-            ctx.fillRect(0, 0, W, 12);
-            ctx.fillStyle = '#dc2626';
-            ctx.fillRect(0, 0, 360, 12);
+            // Subtle Bangladesh Map Watermark behind Headline
+            drawBangladeshMapWatermark(ctx, 540, 825, 1.55);
 
-            // Subtle Bangladesh Map Watermark
-            drawBangladeshMapWatermark(ctx, 880, 815, 1.55);
-
-            // Outer Frame Border
-            ctx.strokeStyle = '#e2e8f0';
-            ctx.lineWidth = 4;
-            ctx.strokeRect(18, 18, W - 36, H - 36);
-
-            // 2. Top-Left: Jonoprobaho24 Logo & Slogan
-            const logoX = 104;
-            const logoY = 92;
-            const logoR = 52;
-
+            // Jonokontho-Style Diagonal Crimson Corner Accents (Top-Right & Bottom-Left)
             ctx.save();
-            ctx.shadowColor = 'rgba(15, 23, 42, 0.14)';
-            ctx.shadowBlur = 12;
             ctx.beginPath();
-            ctx.arc(logoX, logoY, logoR, 0, Math.PI * 2);
-            ctx.fillStyle = '#ffffff';
+            ctx.moveTo(W - 430, 0);
+            ctx.lineTo(W, 0);
+            ctx.lineTo(W, 380);
+            ctx.closePath();
+            const topCornerGrad = ctx.createLinearGradient(W - 430, 0, W, 380);
+            topCornerGrad.addColorStop(0, '#b91c1c');
+            topCornerGrad.addColorStop(1, '#7f1d1d');
+            ctx.fillStyle = topCornerGrad;
             ctx.fill();
             ctx.restore();
 
-            ctx.lineWidth = 5;
-            ctx.strokeStyle = '#dc2626';
-            ctx.stroke();
-
+            ctx.save();
             ctx.beginPath();
-            ctx.arc(logoX, logoY, logoR - 6, 0, Math.PI * 2);
-            ctx.lineWidth = 2.5;
-            ctx.strokeStyle = '#0f172a';
-            ctx.stroke();
+            ctx.moveTo(0, H - 250);
+            ctx.lineTo(250, H);
+            ctx.lineTo(0, H);
+            ctx.closePath();
+            ctx.fillStyle = '#991b1b';
+            ctx.fill();
+            ctx.restore();
 
-            ctx.fillStyle = '#0f172a';
-            ctx.font = 'bold 8.5px "Hind Siliguri", sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('সত্যের পথে জনতার পাশে', logoX, logoY - 21);
-
-            ctx.fillStyle = '#dc2626';
-            ctx.fillRect(logoX - 24, logoY - 17, 48, 2.5);
-
-            ctx.fillStyle = '#0f172a';
-            ctx.font = '900 44px "Hind Siliguri", sans-serif';
-            ctx.fillText('জ', logoX, logoY + 17);
-
-            ctx.font = 'bold 12px "Hind Siliguri", sans-serif';
-            ctx.fillStyle = '#0f172a';
-            ctx.fillText('জনপ্রবাহ', logoX - 9, logoY + 34);
-            ctx.fillStyle = '#dc2626';
-            ctx.fillText('24', logoX + 21, logoY + 34);
-
-            // Brand Name & Slogan next to round emblem
-            ctx.textAlign = 'left';
-            ctx.font = '900 46px "Hind Siliguri", sans-serif';
-            ctx.fillStyle = '#0f172a';
-            ctx.fillText('জনপ্রবাহ', 174, 88);
-            const brandW = ctx.measureText('জনপ্রবাহ').width;
-            ctx.fillStyle = '#dc2626';
-            ctx.fillText('২৪', 174 + brandW, 88);
-
-            ctx.font = '600 22px "Hind Siliguri", sans-serif';
-            ctx.fillStyle = '#475569';
-            ctx.fillText(portalSettings.slogan || 'সত্যের পথে জনতার পাশে', 174, 120);
-
-            // 3. Top-Right: Clean Date & Category Pill
+            // 2. Top-Right Date inside Crimson Corner
             const dateText = data.dateStr || new Date().toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
             ctx.save();
-            ctx.shadowColor = 'rgba(15, 23, 42, 0.08)';
-            ctx.shadowBlur = 10;
-            ctx.fillStyle = '#eff6ff';
-            ctx.beginPath();
-            ctx.roundRect(W - 335, 48, 280, 46, 23);
-            ctx.fill();
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = '#bfdbfe';
-            ctx.stroke();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 21px "Hind Siliguri", sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText(dateText, W - 26, 40);
             ctx.restore();
 
-            ctx.fillStyle = '#dc2626';
-            ctx.beginPath();
-            ctx.arc(W - 310, 71, 6, 0, Math.PI * 2);
-            ctx.fill();
+            // 3. Top-Center Jonokontho-Style Calligraphy Masthead Logo ("জনপ্রবাহ২৪")
+            const centerX = W / 2;
+            const mastY = 92;
 
-            ctx.fillStyle = '#1e3a8a';
-            ctx.font = 'bold 21px "Hind Siliguri", sans-serif';
+            ctx.font = '700 17px "Hind Siliguri", sans-serif';
+            ctx.fillStyle = '#334155';
             ctx.textAlign = 'center';
-            ctx.fillText(dateText, W - 185, 78);
+            ctx.fillText(portalSettings.slogan || 'সত্যের পথে জনতার পাশে', centerX - 38, 36);
 
-            ctx.fillStyle = '#dc2626';
+            ctx.font = '76px "Galada", "Tiro Bangla", serif';
+            const mainWord = 'জনপ্রবাহ';
+            const mainW = ctx.measureText(mainWord).width;
+            const numWord = '২৪';
+            ctx.font = '900 54px "Hind Siliguri", sans-serif';
+            const numW = ctx.measureText(numWord).width + 26;
+            const totalLogoW = mainW + numW + 14;
+            const startLogoX = centerX - totalLogoW / 2;
+
+            ctx.save();
+            ctx.font = '76px "Galada", "Tiro Bangla", serif';
+            ctx.textAlign = 'left';
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.14)';
+            ctx.fillText(mainWord, startLogoX + 3, mastY + 3);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText(mainWord, startLogoX, mastY);
+            ctx.restore();
+
+            const badgeX = startLogoX + mainW + 12;
+            const badgeY = mastY - 52;
+            ctx.save();
             ctx.beginPath();
-            ctx.roundRect(W - 225, 104, 170, 32, 6);
+            ctx.arc(badgeX + numW / 2, badgeY + 28, 34, 0, Math.PI * 2);
+            ctx.fillStyle = '#dc2626';
             ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 19px "Hind Siliguri", sans-serif';
-            ctx.fillText(data.category, W - 140, 126);
+            ctx.font = '900 40px "Hind Siliguri", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(numWord, badgeX + numW / 2, badgeY + 42);
+            ctx.restore();
+
+            const ruleW = 440;
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(centerX - ruleW / 2, 114, ruleW, 3);
+            ctx.fillStyle = '#dc2626';
+            ctx.fillRect(centerX - 110, 113, 220, 5);
 
             // 4. Center Large Bordered News Photo Frame
             const frameX = 55;
-            const frameY = 160;
+            const frameY = 142;
             const frameW = W - 110;
-            const frameH = 515;
+            const frameH = 525;
 
             ctx.save();
-            ctx.shadowColor = 'rgba(15, 23, 42, 0.18)';
-            ctx.shadowBlur = 22;
+            ctx.shadowColor = 'rgba(15, 23, 42, 0.22)';
+            ctx.shadowBlur = 24;
             ctx.shadowOffsetY = 8;
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
-            ctx.roundRect(frameX - 10, frameY - 10, frameW + 20, frameH + 20, 18);
+            ctx.roundRect(frameX - 10, frameY - 10, frameW + 20, frameH + 20, 16);
             ctx.fill();
             ctx.restore();
 
             ctx.save();
             ctx.beginPath();
-            ctx.roundRect(frameX, frameY, frameW, frameH, 12);
+            ctx.roundRect(frameX, frameY, frameW, frameH, 10);
             ctx.clip();
 
             ctx.fillStyle = '#f1f5f9';
@@ -1716,25 +2112,23 @@
             ctx.strokeStyle = '#dc2626';
             ctx.lineWidth = 4;
             ctx.beginPath();
-            ctx.roundRect(frameX - 10, frameY - 10, frameW + 20, frameH + 20, 18);
+            ctx.roundRect(frameX - 10, frameY - 10, frameW + 20, frameH + 20, 16);
             ctx.stroke();
 
-            // 5. Smart Auto-Scaling Two-Tone Headline (Fills Space Naturally)
-            drawTwoToneHeadline(ctx, data.title, W / 2, 700, W - 150, 280);
+            // 5. Smart Auto-Scaling Two-Tone Headline (2 lines for short, max 3 lines for long)
+            drawTwoToneHeadline(ctx, data.title, W / 2, 692, W - 150, 290);
 
             // 6. Bottom Footer Bar: Social Icons (Left) + "বিস্তারিত কমেন্টে" (Center) + Domain (Right)
-            const barY = H - 78;
-            ctx.fillStyle = '#1e3a8a';
+            const barY = H - 76;
+            ctx.fillStyle = '#0f172a';
             ctx.beginPath();
             ctx.roundRect(55, barY, W - 110, 50, 12);
             ctx.fill();
 
-            // Left: Facebook & YouTube Icons + /jonoprobaho24
             const fbX = 88;
             const ytX = 122;
             const iconY = barY + 25;
 
-            // Facebook Circle Badge
             ctx.fillStyle = '#1877F2';
             ctx.beginPath();
             ctx.arc(fbX, iconY, 13, 0, Math.PI * 2);
@@ -1744,7 +2138,6 @@
             ctx.textAlign = 'center';
             ctx.fillText('f', fbX, iconY + 6);
 
-            // YouTube Rounded Badge
             ctx.fillStyle = '#FF0000';
             ctx.beginPath();
             ctx.roundRect(ytX - 15, iconY - 10, 30, 20, 5);
@@ -1757,13 +2150,11 @@
             ctx.closePath();
             ctx.fill();
 
-            // Social Handle Text
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 19px sans-serif';
             ctx.textAlign = 'left';
             ctx.fillText('/jonoprobaho24', ytX + 22, barY + 32);
 
-            // Center Red Accent Pill inside Footer Bar
             const pillW = 280;
             const pillX = (W - pillW) / 2 + 12;
             ctx.fillStyle = '#dc2626';
@@ -1776,8 +2167,7 @@
             ctx.textAlign = 'center';
             ctx.fillText('বিস্তারিত কমেন্টে', pillX + pillW / 2, barY + 33);
 
-            // Right: Website URL
-            ctx.fillStyle = '#e0f2fe';
+            ctx.fillStyle = '#f8fafc';
             ctx.font = '600 19px sans-serif';
             ctx.textAlign = 'right';
             ctx.fillText('jonoprobaho24.com', W - 75, barY + 32);
@@ -1788,7 +2178,6 @@
             const spaceW = ctx.measureText(' ').width;
             const totalW = words.reduce((acc, w, idx) => acc + ctx.measureText(w).width + (idx > 0 ? spaceW : 0), 0);
 
-            // If everything fits comfortably on 1 single line
             if (totalW <= maxWidth) {
                 let wSum = 0;
                 const single = words.map((w, i) => {
@@ -1799,7 +2188,6 @@
                 return [{ words: single, width: wSum }];
             }
 
-            // Otherwise split cleanly across target lines so lines look balanced
             const desiredLines = totalW <= maxWidth * 1.9 ? 2 : 3;
             const targetLineW = totalW / desiredLines;
 
@@ -1840,7 +2228,6 @@
             const colonIdx = words.findIndex(w => w.includes(':') || w.includes('ঃ'));
             const redCount = colonIdx !== -1 ? colonIdx + 1 : Math.max(1, Math.min(3, Math.ceil(words.length * 0.35)));
 
-            // Start large so short headlines look bold & prominent, scale down only when needed
             let fontSize = words.length <= 6 ? 76 : (words.length <= 10 ? 64 : 54);
             const maxLinesAllowed = words.length <= 10 ? 2 : 3;
             let lineHeight = Math.round(fontSize * 1.32);
