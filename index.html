@@ -1501,8 +1501,13 @@
             const defaultDate = new Date(news.timestamp || Date.now()).toLocaleDateString('bn-BD', {
                 day: 'numeric', month: 'long', year: 'numeric'
             });
-            const cleanSub = (news.content || '').replace(/\s+/g, ' ').trim();
-            const shortSub = cleanSub.length > 95 ? cleanSub.slice(0, 92) + '...' : cleanSub;
+            let cleanSub = (news.content || '').replace(/\s+/g, ' ').trim();
+            const cleanTitle = (news.title || '').replace(/\s+/g, ' ').trim();
+            // Remove duplicate headline from the beginning of sub-headline
+            if (cleanSub.startsWith(cleanTitle)) {
+                cleanSub = cleanSub.slice(cleanTitle.length).replace(/^[:：\-\s।,]+/, '').trim();
+            }
+            const shortSub = cleanSub.length > 85 ? cleanSub.slice(0, 82).trim() + '...' : cleanSub;
 
             document.getElementById('pc-edit-date').value = defaultDate;
             document.getElementById('pc-edit-cat').value = news.category || 'সর্বশেষ';
@@ -1619,15 +1624,15 @@
             ctx.stroke();
 
             ctx.fillStyle = '#0f172a';
-            ctx.font = 'bold 9.5px "Hind Siliguri", sans-serif';
+            ctx.font = 'bold 8.5px "Hind Siliguri", sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('সত্যের পথে জনতার পাশে', logoX, logoY - 23);
+            ctx.fillText('সত্যের পথে জনতার পাশে', logoX, logoY - 21);
 
             ctx.fillStyle = '#dc2626';
-            ctx.fillRect(logoX - 24, logoY - 19, 48, 2.5);
+            ctx.fillRect(logoX - 24, logoY - 17, 48, 2.5);
 
             ctx.fillStyle = '#0f172a';
-            ctx.font = '900 46px "Hind Siliguri", sans-serif';
+            ctx.font = '900 44px "Hind Siliguri", sans-serif';
             ctx.fillText('জ', logoX, logoY + 17);
 
             ctx.font = 'bold 12px "Hind Siliguri", sans-serif';
@@ -1685,9 +1690,9 @@
 
             // 4. Center Large Bordered News Photo Frame
             const frameX = 55;
-            const frameY = 165;
+            const frameY = 160;
             const frameW = W - 110;
-            const frameH = 490;
+            const frameH = 515;
 
             ctx.save();
             ctx.shadowColor = 'rgba(15, 23, 42, 0.18)';
@@ -1704,18 +1709,28 @@
             ctx.roundRect(frameX, frameY, frameW, frameH, 12);
             ctx.clip();
 
-            ctx.fillStyle = '#0f172a';
+            ctx.fillStyle = '#f1f5f9';
             ctx.fillRect(frameX, frameY, frameW, frameH);
 
             if (img) {
-                ctx.filter = 'blur(18px) brightness(0.45)';
-                ctx.drawImage(img, frameX - 25, frameY - 25, frameW + 50, frameH + 50);
-                ctx.filter = 'none';
+                const imgRatio = img.width / img.height;
+                const frameRatio = frameW / frameH;
+                // Smart Fill for standard landscape photos so no dark sidebars appear, while keeping portrait photos uncropped
+                if (imgRatio >= 1.15 && imgRatio <= 2.1) {
+                    const coverScale = Math.max(frameW / img.width, frameH / img.height);
+                    const dw = img.width * coverScale;
+                    const dh = img.height * coverScale;
+                    ctx.drawImage(img, frameX + (frameW - dw) / 2, frameY + (frameH - dh) / 2, dw, dh);
+                } else {
+                    ctx.filter = 'blur(20px) brightness(0.85)';
+                    ctx.drawImage(img, frameX - 25, frameY - 25, frameW + 50, frameH + 50);
+                    ctx.filter = 'none';
 
-                const scale = Math.min(frameW / img.width, frameH / img.height);
-                const drawW = img.width * scale;
-                const drawH = img.height * scale;
-                ctx.drawImage(img, frameX + (frameW - drawW) / 2, frameY + (frameH - drawH) / 2, drawW, drawH);
+                    const scale = Math.min(frameW / img.width, frameH / img.height);
+                    const drawW = img.width * scale;
+                    const drawH = img.height * scale;
+                    ctx.drawImage(img, frameX + (frameW - drawW) / 2, frameY + (frameH - drawH) / 2, drawW, drawH);
+                }
             } else {
                 ctx.fillStyle = '#94a3b8';
                 ctx.font = 'bold 30px "Hind Siliguri", sans-serif';
