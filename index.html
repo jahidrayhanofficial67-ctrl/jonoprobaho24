@@ -1719,8 +1719,8 @@
             ctx.roundRect(frameX - 10, frameY - 10, frameW + 20, frameH + 20, 18);
             ctx.stroke();
 
-            // 5. Balanced, Professional Two-Tone Editorial Headline with Safe Margins
-            drawTwoToneHeadline(ctx, data.title, W / 2, 702, W - 170, 275);
+            // 5. Smart Auto-Scaling Two-Tone Headline (Fills Space Naturally)
+            drawTwoToneHeadline(ctx, data.title, W / 2, 700, W - 150, 280);
 
             // 6. Bottom Footer Bar: Social Icons (Left) + "বিস্তারিত কমেন্টে" (Center) + Domain (Right)
             const barY = H - 78;
@@ -1783,14 +1783,25 @@
             ctx.fillText('jonoprobaho24.com', W - 75, barY + 32);
         }
 
-        function buildBalancedLines(ctx, words, redCount, maxWidth, fontSize) {
+        function wrapWordsIntoLines(ctx, words, redCount, maxWidth, fontSize) {
             ctx.font = `bold ${fontSize}px "Tiro Bangla", "Hind Siliguri", serif`;
             const spaceW = ctx.measureText(' ').width;
-            const totalTextW = words.reduce((acc, w, idx) => acc + ctx.measureText(w).width + (idx > 0 ? spaceW : 0), 0);
+            const totalW = words.reduce((acc, w, idx) => acc + ctx.measureText(w).width + (idx > 0 ? spaceW : 0), 0);
 
-            // Fit naturally into 2 lines whenever possible; use 3 lines only for very long headlines
-            const targetLines = totalTextW <= maxWidth * 1.85 ? 2 : 3;
-            const idealLineW = Math.min(maxWidth, totalTextW / targetLines + spaceW * 1.5);
+            // If everything fits comfortably on 1 single line
+            if (totalW <= maxWidth) {
+                let wSum = 0;
+                const single = words.map((w, i) => {
+                    const ww = ctx.measureText(w).width;
+                    wSum += ww + (i > 0 ? spaceW : 0);
+                    return { word: w, color: i < redCount ? '#dc2626' : '#0f172a' };
+                });
+                return [{ words: single, width: wSum }];
+            }
+
+            // Otherwise split cleanly across target lines so lines look balanced
+            const desiredLines = totalW <= maxWidth * 1.9 ? 2 : 3;
+            const targetLineW = totalW / desiredLines;
 
             const lines = [];
             let currentLine = [];
@@ -1803,11 +1814,13 @@
                 };
                 const wWidth = ctx.measureText(wordObj.word).width;
                 const addedW = currentLine.length === 0 ? wWidth : spaceW + wWidth;
-
                 const remainingWords = words.length - i;
-                const remainingLinesSlot = targetLines - lines.length;
+                const remainingSlots = desiredLines - lines.length;
 
-                if (currentLine.length > 0 && (currentW + addedW > maxWidth || (currentW + addedW > idealLineW && remainingWords >= remainingLinesSlot))) {
+                const exceedsMax = currentLine.length > 0 && (currentW + addedW > maxWidth);
+                const balancedBreak = currentLine.length > 0 && remainingSlots > 1 && remainingWords >= remainingSlots && (currentW + addedW * 0.55 > targetLineW);
+
+                if (exceedsMax || balancedBreak) {
                     lines.push({ words: currentLine, width: currentW });
                     currentLine = [wordObj];
                     currentW = wWidth;
@@ -1825,21 +1838,22 @@
         function drawTwoToneHeadline(ctx, text, centerX, topY, maxWidth, maxBoxHeight) {
             const words = text.trim().split(/\s+/);
             const colonIdx = words.findIndex(w => w.includes(':') || w.includes('ঃ'));
-            const redCount = colonIdx !== -1 ? colonIdx + 1 : Math.max(2, Math.min(3, Math.ceil(words.length * 0.32)));
+            const redCount = colonIdx !== -1 ? colonIdx + 1 : Math.max(1, Math.min(3, Math.ceil(words.length * 0.35)));
 
-            const maxAllowedLines = words.length <= 10 ? 2 : 3;
-            let fontSize = words.length <= 10 ? 54 : 48;
-            let lineHeight = Math.round(fontSize * 1.35);
+            // Start large so short headlines look bold & prominent, scale down only when needed
+            let fontSize = words.length <= 6 ? 76 : (words.length <= 10 ? 64 : 54);
+            const maxLinesAllowed = words.length <= 10 ? 2 : 3;
+            let lineHeight = Math.round(fontSize * 1.32);
             let wrappedLines = [];
 
-            while (fontSize >= 24) {
-                lineHeight = Math.round(fontSize * 1.35);
-                wrappedLines = buildBalancedLines(ctx, words, redCount, maxWidth, fontSize);
+            while (fontSize >= 28) {
+                lineHeight = Math.round(fontSize * 1.32);
+                wrappedLines = wrapWordsIntoLines(ctx, words, redCount, maxWidth, fontSize);
 
-                const fitsLineLimit = wrappedLines.length <= maxAllowedLines;
+                const fitsLines = wrappedLines.length <= maxLinesAllowed;
                 const fitsHeight = wrappedLines.length * lineHeight <= maxBoxHeight;
                 const fitsWidth = wrappedLines.every(l => l.width <= maxWidth);
-                if (fitsLineLimit && fitsHeight && fitsWidth) break;
+                if (fitsLines && fitsHeight && fitsWidth) break;
                 fontSize -= 2;
             }
 
