@@ -191,25 +191,15 @@
     </div>
 
     <!-- Main Header & Dynamic Brand Logo -->
-    <header class="bg-white shadow-sm py-3.5 px-4 border-b-2 border-red-600 sticky top-0 z-40 relative overflow-hidden">
-        <!-- Animated National Background Layer -->
-        <div class="pointer-events-none absolute inset-0 overflow-hidden select-none">
-            <!-- Soft Bangladesh Green & Red National Wave -->
-            <div class="animate-national-wave absolute -inset-x-10 inset-y-0 bg-gradient-to-r from-emerald-600/[0.07] via-red-600/[0.08] to-emerald-700/[0.07]"></div>
-            <!-- Gentle Light Sweep -->
-            <div class="animate-shine-sweep absolute top-0 bottom-0 w-32 bg-gradient-to-r from-transparent via-red-500/[0.08] to-transparent"></div>
-            <!-- Floating Bangladesh Map & National Emblem SVG -->
-            <svg class="animate-map-float absolute right-4 sm:right-1/3 -top-2 h-24 sm:h-28 w-auto text-emerald-800/[0.09]" viewBox="0 0 200 260" fill="currentColor">
-                <path d="M55,15 L80,25 L95,50 L125,55 L155,45 L185,65 L195,95 L170,125 L165,165 L185,195 L195,245 L180,255 L165,240 L155,210 L130,200 L115,230 L90,235 L65,230 L45,215 L50,180 L25,160 L15,125 L35,90 L25,50 L40,25 Z"/>
-                <circle cx="108" cy="128" r="24" fill="#dc2626" fill-opacity="0.65"/>
-            </svg>
-        </div>
+    <header class="bg-gradient-to-r from-slate-950 via-blue-950 to-slate-950 shadow-lg py-3.5 px-4 border-b-2 border-red-600 sticky top-0 z-40 relative overflow-hidden">
+        <!-- TV News Broadcast Rotating World Map & Satellite Canvas -->
+        <canvas id="header-world-globe-canvas" class="pointer-events-none absolute inset-0 w-full h-full opacity-90"></canvas>
 
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3 relative z-10">
             <a href="#" onclick="resetToHome(); return false;" class="flex items-center gap-3 group">
                 <div class="relative shrink-0">
-                    <span class="absolute -inset-1 rounded-full bg-red-500/20 animate-ping"></span>
-                    <div id="header-logo-container" class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full border-4 border-red-600 p-0.5 bg-white shadow-md flex items-center justify-center overflow-hidden">
+                    <span class="absolute -inset-1 rounded-full bg-red-500/30 animate-ping"></span>
+                    <div id="header-logo-container" class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full border-4 border-red-600 p-0.5 bg-white shadow-lg flex items-center justify-center overflow-hidden">
                         <div class="w-full h-full rounded-full border-2 border-black flex flex-col items-center justify-center bg-white">
                             <span class="text-[6px] sm:text-[7px] font-bold text-black leading-none tracking-tighter">সত্যের পথে জনতার পাশে</span>
                             <div class="w-7 h-0.5 bg-red-600 my-0.5"></div>
@@ -219,18 +209,21 @@
                     </div>
                 </div>
                 <div>
-                    <h1 id="header-portal-name" class="font-masthead text-3xl sm:text-4xl tracking-tight text-black leading-none pt-1">
-                        জনপ্রবাহ<span class="text-red-600 font-sans font-black">২৪</span>
-                    </h1>
-                    <p id="header-portal-slogan" class="text-xs sm:text-sm font-semibold text-gray-600 mt-1">সত্যের পথে জনতার পাশে</p>
+                    <div class="flex items-center gap-2">
+                        <h1 id="header-portal-name" class="font-masthead text-3xl sm:text-4xl tracking-tight text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.85)] leading-none pt-1">
+                            জনপ্রবাহ<span class="text-red-500 font-sans font-black">২৪</span>
+                        </h1>
+                        <span class="bg-red-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider shadow animate-pulse">LIVE</span>
+                    </div>
+                    <p id="header-portal-slogan" class="text-xs sm:text-sm font-semibold text-sky-200 drop-shadow mt-1">সত্যের পথে জনতার পাশে</p>
                 </div>
             </a>
 
             <!-- Search Bar -->
             <div class="w-full md:w-80 relative">
                 <input type="text" id="search-input" onkeyup="searchNews()" placeholder="সংবাদ খুঁজুন..." 
-                    class="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 bg-white/90 backdrop-blur-xs">
-                <button onclick="searchNews()" class="absolute right-3 top-2.5 text-gray-400 hover:text-red-600">
+                    class="w-full pl-4 pr-10 py-2 border border-sky-400/30 rounded-full text-sm text-white placeholder-slate-300 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 bg-slate-900/75 backdrop-blur-md">
+                <button onclick="searchNews()" class="absolute right-3 top-2.5 text-sky-300 hover:text-red-400">
                     <i class="fas fa-search"></i>
                 </button>
             </div>
@@ -2381,6 +2374,174 @@
             setTimeout(() => { toast.classList.add('translate-y-24', 'opacity-0'); }, 3000);
         }
 
+        // TV Broadcast Rotating 3D World Globe & News Studio Animation
+        function startHeaderWorldGlobeAnimation() {
+            const canvas = document.getElementById('header-world-globe-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let rot = 0;
+
+            // Simplified World Continents (lon, lat in degrees)
+            const continents = [
+                // North America
+                [[-130, 55], [-100, 65], [-75, 55], [-80, 30], [-95, 20], [-115, 32], [-125, 48]],
+                // South America
+                [[-75, 10], [-50, 0], [-38, -15], [-55, -38], [-70, -52], [-78, -20], [-80, 0]],
+                // Europe & Asia (Eurasia)
+                [[-10, 38], [10, 55], [40, 65], [90, 70], [140, 62], [135, 35], [115, 22], [95, 15], [88, 24], [75, 10], [60, 25], [35, 32], [25, 42], [0, 45]],
+                // Africa
+                [[-15, 32], [15, 34], [35, 28], [48, 10], [38, -18], [20, -34], [12, -15], [5, 5], [-15, 12]],
+                // Australia
+                [[115, -22], [135, -14], [152, -25], [146, -38], [120, -34]]
+            ];
+
+            // Major Broadcast Hub Cities (Dhaka highlighted in Red)
+            const hubs = [
+                { lon: 90.4, lat: 23.8, bd: true },  // Dhaka, Bangladesh
+                { lon: -0.1, lat: 51.5, bd: false }, // London
+                { lon: -74.0, lat: 40.7, bd: false },// New York
+                { lon: 55.3, lat: 25.2, bd: false }, // Dubai
+                { lon: 139.7, lat: 35.7, bd: false } // Tokyo
+            ];
+
+            function renderGlobe() {
+                const rect = canvas.getBoundingClientRect();
+                if (canvas.width !== Math.floor(rect.width) || canvas.height !== Math.floor(rect.height)) {
+                    canvas.width = Math.max(300, Math.floor(rect.width));
+                    canvas.height = Math.max(80, Math.floor(rect.height));
+                }
+
+                const W = canvas.width;
+                const H = canvas.height;
+                ctx.clearRect(0, 0, W, H);
+
+                // Subtle Broadcast Studio Grid Lines
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.08)';
+                ctx.lineWidth = 1;
+                for (let x = 0; x < W; x += 48) {
+                    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+                }
+
+                // Flowing World Map Strip Across Background
+                const mapOffset = (rot * 45) % W;
+                ctx.save();
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.11)';
+                ctx.strokeStyle = 'rgba(125, 211, 252, 0.22)';
+                ctx.lineWidth = 1.2;
+                [-W, 0, W].forEach(shift => {
+                    continents.forEach(poly => {
+                        ctx.beginPath();
+                        poly.forEach(([lon, lat], idx) => {
+                            const px = shift + mapOffset + ((lon + 180) / 360) * W;
+                            const py = ((90 - lat) / 180) * H;
+                            if (idx === 0) ctx.moveTo(px, py);
+                            else ctx.lineTo(px, py);
+                        });
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
+                    });
+                });
+                ctx.restore();
+
+                // Center-Right 3D Rotating Wireframe World Globe
+                const cx = W * 0.56;
+                const cy = H * 0.52;
+                const R = Math.min(H * 0.85, 88);
+
+                // Globe Outer Glow
+                const glow = ctx.createRadialGradient(cx, cy, R * 0.2, cx, cy, R * 1.35);
+                glow.addColorStop(0, 'rgba(14, 165, 233, 0.28)');
+                glow.addColorStop(0.7, 'rgba(220, 38, 38, 0.14)');
+                glow.addColorStop(1, 'rgba(15, 23, 42, 0)');
+                ctx.fillStyle = glow;
+                ctx.beginPath();
+                ctx.arc(cx, cy, R * 1.35, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Longitude & Latitude Wireframe Rings
+                ctx.strokeStyle = 'rgba(125, 211, 252, 0.25)';
+                ctx.lineWidth = 1;
+                for (let i = 0; i < 6; i++) {
+                    const angle = rot + (i * Math.PI) / 6;
+                    const rx = Math.abs(Math.cos(angle)) * R;
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy, Math.max(2, rx), R, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                [-0.5, 0, 0.5].forEach(latFactor => {
+                    const ly = cy + latFactor * R;
+                    const lr = Math.sqrt(Math.max(0, R * R - (latFactor * R) ** 2));
+                    ctx.beginPath();
+                    ctx.ellipse(cx, ly, lr, lr * 0.25, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+                });
+
+                // 3D Projected Rotating Continents on Globe
+                continents.forEach(poly => {
+                    ctx.beginPath();
+                    let visiblePts = 0;
+                    poly.forEach(([lon, lat], idx) => {
+                        const lambda = (lon * Math.PI) / 180 + rot;
+                        const phi = (lat * Math.PI) / 180;
+                        const z = Math.cos(phi) * Math.cos(lambda);
+                        const x = cx + R * Math.cos(phi) * Math.sin(lambda);
+                        const y = cy - R * Math.sin(phi);
+                        if (z > -0.15) visiblePts++;
+                        if (idx === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    });
+                    if (visiblePts > 2) {
+                        ctx.closePath();
+                        ctx.fillStyle = 'rgba(56, 189, 248, 0.34)';
+                        ctx.fill();
+                        ctx.strokeStyle = 'rgba(224, 242, 254, 0.55)';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                });
+
+                // Tilted Satellite Orbit Ring & Moving Signal Dot
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(-0.32);
+                ctx.strokeStyle = 'rgba(239, 68, 68, 0.55)';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, R * 1.28, R * 0.36, 0, 0, Math.PI * 2);
+                ctx.stroke();
+
+                const satX = Math.cos(rot * 2.2) * (R * 1.28);
+                const satY = Math.sin(rot * 2.2) * (R * 0.36);
+                ctx.fillStyle = '#fde047';
+                ctx.beginPath();
+                ctx.arc(satX, satY, 3.2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                // Broadcast City Nodes & Dhaka Red Pulse
+                hubs.forEach(h => {
+                    const lambda = (h.lon * Math.PI) / 180 + rot;
+                    const phi = (h.lat * Math.PI) / 180;
+                    const z = Math.cos(phi) * Math.cos(lambda);
+                    if (z > 0) {
+                        const hx = cx + R * Math.cos(phi) * Math.sin(lambda);
+                        const hy = cy - R * Math.sin(phi);
+                        ctx.fillStyle = h.bd ? '#ef4444' : '#38bdf8';
+                        ctx.beginPath();
+                        ctx.arc(hx, hy, h.bd ? 4 : 2.2, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                });
+
+                rot += 0.008;
+                requestAnimationFrame(renderGlobe);
+            }
+
+            renderGlobe();
+        }
+
+        startHeaderWorldGlobeAnimation();
         initApp();
     </script>
 </body>
