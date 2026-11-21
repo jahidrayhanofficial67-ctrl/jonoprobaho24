@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#dc2626">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="জনপ্রবাহ২৪">
     <title>জনপ্রবাহ২৪ | সত্যের পথে জনতার পাশে</title>
+    <link id="dynamic-favicon" rel="icon" type="image/png">
+    <link id="dynamic-apple-icon" rel="apple-touch-icon">
+    <link id="dynamic-manifest" rel="manifest">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -71,6 +78,87 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
+    <script>
+        // Generate Colored Jonoprobaho24 App Icon & PWA Manifest Automatically
+        (function setupPWAAndColoredIcon() {
+            try {
+                const c = document.createElement('canvas');
+                c.width = 512;
+                c.height = 512;
+                const ctx = c.getContext('2d');
+
+                // White App Background with subtle border
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, 512, 512);
+
+                // Outer Crimson Ring
+                ctx.beginPath();
+                ctx.arc(256, 256, 226, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+                ctx.lineWidth = 22;
+                ctx.strokeStyle = '#dc2626';
+                ctx.stroke();
+
+                // Inner Black Ring
+                ctx.beginPath();
+                ctx.arc(256, 256, 200, 0, Math.PI * 2);
+                ctx.lineWidth = 10;
+                ctx.strokeStyle = '#111827';
+                ctx.stroke();
+
+                // Slogan Text
+                ctx.fillStyle = '#111827';
+                ctx.font = 'bold 26px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('সত্যের পথে জনতার পাশে', 256, 138);
+
+                // Red Divider
+                ctx.fillStyle = '#dc2626';
+                ctx.fillRect(160, 152, 192, 7);
+
+                // Giant "জ"
+                ctx.fillStyle = '#111827';
+                ctx.font = '900 185px serif';
+                ctx.fillText('জ', 256, 315);
+
+                // "জনপ্রবাহ24"
+                ctx.font = '900 44px sans-serif';
+                ctx.fillStyle = '#111827';
+                ctx.fillText('জনপ্রবাহ', 224, 385);
+                ctx.fillStyle = '#dc2626';
+                ctx.fillText('24', 338, 385);
+
+                const iconDataUrl = c.toDataURL('image/png');
+                const fav = document.getElementById('dynamic-favicon');
+                const apple = document.getElementById('dynamic-apple-icon');
+                if (fav) fav.href = iconDataUrl;
+                if (apple) apple.href = iconDataUrl;
+
+                const manifestObj = {
+                    name: "জনপ্রবাহ২৪ | সত্যের পথে জনতার পাশে",
+                    short_name: "জনপ্রবাহ২৪",
+                    start_url: window.location.href.split('#')[0],
+                    display: "standalone",
+                    background_color: "#ffffff",
+                    theme_color: "#dc2626",
+                    icons: [
+                        { src: iconDataUrl, sizes: "192x192", type: "image/png" },
+                        { src: iconDataUrl, sizes: "512x512", type: "image/png" }
+                    ]
+                };
+                const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+                const manifestEl = document.getElementById('dynamic-manifest');
+                if (manifestEl) manifestEl.href = URL.createObjectURL(manifestBlob);
+
+                if ('serviceWorker' in navigator) {
+                    const swCode = "self.addEventListener('fetch', function(e) {});";
+                    const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+                }
+            } catch (e) {}
+        })();
+    </script>
 </head>
 <body class="flex flex-col min-h-screen">
 
@@ -722,6 +810,10 @@
                 logoContainer.innerHTML = `<img src="${portalSettings.customLogo}" class="w-full h-full object-cover rounded-full">`;
                 document.getElementById('logo-preview-img').src = portalSettings.customLogo;
                 document.getElementById('logo-preview-wrap').classList.remove('hidden');
+                const fav = document.getElementById('dynamic-favicon');
+                const apple = document.getElementById('dynamic-apple-icon');
+                if (fav) fav.href = portalSettings.customLogo;
+                if (apple) apple.href = portalSettings.customLogo;
             } else {
                 logoContainer.innerHTML = `
                     <div class="w-full h-full rounded-full border-2 border-black flex flex-col items-center justify-center bg-white">
@@ -1769,7 +1861,6 @@
             const W = 1080;
             const H = 1080;
 
-            // Theme colors per card type
             let bg1 = '#0f172a', bg2 = '#1e3a8a', accent = '#f59e0b', badge = 'শুভ সকাল', heading = 'শুভ সকাল, বাংলাদেশ!', sub = 'নতুন সকালের আলোয় আপনার দিনটি হোক সুন্দর, সফল ও কল্যাণময়।', emoji = '☀️';
             if (type === 'night') {
                 bg1 = '#020617'; bg2 = '#1e1b4b'; accent = '#38bdf8'; badge = 'শুভরাত্রি';
@@ -1794,12 +1885,10 @@
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, W, H);
 
-            // Decorative Outer Gold/Red Border
             ctx.strokeStyle = accent;
             ctx.lineWidth = 8;
             ctx.strokeRect(36, 36, W - 72, H - 72);
 
-            // Top Centered Masthead ("জনপ্রবাহ২৪")
             ctx.font = '74px "Galada", "Tiro Bangla", serif';
             ctx.fillStyle = '#ffffff';
             ctx.textAlign = 'center';
@@ -1809,7 +1898,6 @@
             ctx.fillStyle = accent;
             ctx.fillText(portalSettings.slogan || 'সত্যের পথে জনতার পাশে', W / 2, 168);
 
-            // Date Pill
             ctx.fillStyle = 'rgba(255,255,255,0.12)';
             ctx.beginPath();
             ctx.roundRect(W / 2 - 260, 195, 520, 48, 24);
@@ -1818,11 +1906,9 @@
             ctx.font = 'bold 23px "Hind Siliguri", sans-serif';
             ctx.fillText(todayDate, W / 2, 227);
 
-            // Emoji Emblem
             ctx.font = '96px sans-serif';
             ctx.fillText(emoji, W / 2, 365);
 
-            // Main Heading
             ctx.fillStyle = accent;
             ctx.font = 'bold 54px "Tiro Bangla", "Hind Siliguri", serif';
             ctx.fillText(heading, W / 2, 460);
@@ -1855,7 +1941,6 @@
                     ry += 74;
                 });
             } else {
-                // Wrapped Subtitle Message
                 ctx.fillStyle = '#f1f5f9';
                 ctx.font = '600 34px "Hind Siliguri", sans-serif';
                 ctx.textAlign = 'center';
@@ -1874,7 +1959,6 @@
                 if (line.trim()) ctx.fillText(line.trim(), W / 2, ly);
             }
 
-            // Bottom Footer Bar
             const barY = H - 108;
             ctx.fillStyle = '#dc2626';
             ctx.beginPath();
@@ -1966,7 +2050,6 @@
             const W = 1080;
             const H = 1080;
 
-            // 1. Clean White & Soft Newspaper Background
             const bgGrad = ctx.createLinearGradient(0, 0, W, H);
             bgGrad.addColorStop(0, '#ffffff');
             bgGrad.addColorStop(0.6, '#f8fafc');
@@ -1974,10 +2057,8 @@
             ctx.fillStyle = bgGrad;
             ctx.fillRect(0, 0, W, H);
 
-            // Subtle Bangladesh Map Watermark behind Headline
             drawBangladeshMapWatermark(ctx, 540, 825, 1.55);
 
-            // Jonokontho-Style Diagonal Crimson Corner Accents (Top-Right & Bottom-Left)
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(W - 430, 0);
@@ -2001,7 +2082,6 @@
             ctx.fill();
             ctx.restore();
 
-            // 2. Top-Right Date inside Crimson Corner
             const dateText = data.dateStr || new Date().toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
             ctx.save();
             ctx.fillStyle = '#ffffff';
@@ -2010,7 +2090,6 @@
             ctx.fillText(dateText, W - 26, 40);
             ctx.restore();
 
-            // 3. Top-Center Jonokontho-Style Calligraphy Masthead Logo ("জনপ্রবাহ২৪")
             const centerX = W / 2;
             const mastY = 92;
 
@@ -2060,7 +2139,6 @@
             ctx.fillStyle = '#dc2626';
             ctx.fillRect(centerX - 110, 113, 220, 5);
 
-            // 4. Center Large Bordered News Photo Frame
             const frameX = 55;
             const frameY = 142;
             const frameW = W - 110;
@@ -2115,10 +2193,8 @@
             ctx.roundRect(frameX - 10, frameY - 10, frameW + 20, frameH + 20, 16);
             ctx.stroke();
 
-            // 5. Smart Auto-Scaling Two-Tone Headline (2 lines for short, max 3 lines for long)
             drawTwoToneHeadline(ctx, data.title, W / 2, 692, W - 150, 290);
 
-            // 6. Bottom Footer Bar: Social Icons (Left) + "বিস্তারিত কমেন্টে" (Center) + Domain (Right)
             const barY = H - 76;
             ctx.fillStyle = '#0f172a';
             ctx.beginPath();
