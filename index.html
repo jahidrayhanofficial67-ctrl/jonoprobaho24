@@ -6,14 +6,14 @@
     <title>জনপ্রবাহ২৪ | সত্যের পথে জনতার পাশে</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Hind Siliguri & Tiro Bangla (Editorial Serif) -->
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Hind Siliguri & Tiro Bangla -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Hind Siliguri', sans-serif;
-            background-color: #f3f4f6;
+            background-color: #f4f6f9;
             color: #111827;
         }
         .font-editorial {
@@ -150,12 +150,6 @@
             <span id="news-count" class="text-xs font-semibold text-gray-600 bg-gray-200 px-2.5 py-1 rounded-full">০ টি সংবাদ</span>
         </div>
 
-        <!-- Loading Indicator -->
-        <div id="loading-spinner" class="text-center py-12 hidden">
-            <i class="fas fa-spinner fa-spin text-4xl text-red-600"></i>
-            <p class="mt-2 text-gray-600 font-medium">সংবাদ লোড হচ্ছে...</p>
-        </div>
-
         <!-- Lead News Grid -->
         <div id="lead-news-container" class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8"></div>
 
@@ -195,6 +189,8 @@
                 <p class="text-sm text-gray-400">সম্পাদক ও প্রকাশক: <strong id="footer-editor" class="text-white">এইচ এম জাহিদ রায়হান</strong></p>
                 <p class="text-sm text-gray-400 mt-1">কার্যালয়: <span id="footer-address">সদর রোড, বাকেরগঞ্জ, বরিশাল</span></p>
                 <p class="text-sm text-gray-400 mt-1">ইমেইল: <span id="footer-email">news@jonoprobaho24.com</span></p>
+            </div>
+        </div>
         <div class="bg-gray-950 py-3 px-4 text-center text-xs text-gray-500 border-t border-gray-800 flex flex-wrap justify-center items-center gap-3">
             <span>© ২০২৬ জনপ্রবাহ২৪ (Jonoprobaho24.com) | সর্বস্বত্ব সংরক্ষিত।</span>
             <span class="text-gray-700">|</span>
@@ -252,9 +248,9 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-gray-800 mb-1.5"><i class="fas fa-user-edit text-red-600 mr-1"></i> প্রতিবেদকের নাম</label>
-                        <input type="text" id="news-reporter" value="নিজস্ব প্রতিবেদক" 
-                            class="smart-input w-full px-3.5 py-2.5 border border-gray-300 rounded-xl focus:outline-none text-sm font-medium">
+                        <label class="block text-sm font-bold text-gray-800 mb-1.5"><i class="fas fa-user-edit text-red-600 mr-1"></i> প্রতিবেদক / প্রতিনিধি</label>
+                        <input type="text" id="news-reporter" value="নিজস্ব প্রতিবেদক" placeholder="প্রতিবেদকের নাম ও এলাকা" 
+                            class="smart-input w-full px-3.5 py-2.5 border border-gray-300 rounded-xl focus:outline-none text-sm font-semibold">
                     </div>
                 </div>
                 
@@ -452,10 +448,6 @@
                     <label class="block font-bold text-gray-700 mb-1">শিরোনাম (প্রথম অংশ লাল, বাকি অংশ গাঢ় নীল রঙে দেখাবে):</label>
                     <input type="text" id="pc-edit-title" oninput="redrawActivePhotoCard()" class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg bg-white font-bold text-gray-900">
                 </div>
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">সংক্ষিপ্ত সাব-হেডলাইন:</label>
-                    <input type="text" id="pc-edit-sub" oninput="redrawActivePhotoCard()" placeholder="সংক্ষিপ্ত বিবরণ লিখুন..." class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg bg-white">
-                </div>
             </div>
 
             <div class="flex flex-col sm:flex-row justify-between items-center gap-2.5">
@@ -475,7 +467,6 @@
 
     <!-- Firebase & Application Logic -->
     <script>
-        // আপনার নিজের Firebase Config ও ImgBB API Key (আগের অ্যাপ থেকে যুক্ত করা হয়েছে)
         const firebaseConfig = {
             apiKey: "AIzaSyAx5CAqZZIIzXLmP8TvzSwlOApYq4PE4wI",
             authDomain: "ijab-bakerganj.firebaseapp.com",
@@ -486,7 +477,6 @@
         };
         const IMGBB_API_KEY = "83d9e310c0816f055a8d15e6bf44a1f2";
 
-        // Default Portal Settings
         let portalSettings = {
             adminPass: "2424",
             slogan: "সত্যের পথে জনতার পাশে",
@@ -596,6 +586,9 @@
                 image: 'https://placehold.co/800x450/111827/ffffff?text=Jonoprobaho24+News',
                 content: 'সত্য ও বস্তুনিষ্ঠ সংবাদ পরিবেশনের অঙ্গীকার নিয়ে আনুষ্ঠানিকভাবে যাত্রা শুরু করলো অনলাইন নিউজ পোর্টাল জনপ্রবাহ২৪ (Jonoprobaho24.com)। দেশের আনাচে-কানাচে ঘটে যাওয়া সকল সংবাদ সবার আগে পাঠকদের কাছে পৌঁছে দিতে কাজ করবে এই পোর্টালটি।',
                 isBreaking: true,
+                views: 1,
+                likes: 1,
+                comments: [],
                 timestamp: Date.now()
             }
         ];
@@ -902,7 +895,6 @@
             const news = allNews.find(n => n.id === id);
             if (!news) return;
 
-            // Increment views once per article per session
             const viewedKey = `jp24_viewed_${id}`;
             if (!sessionStorage.getItem(viewedKey)) {
                 sessionStorage.setItem(viewedKey, '1');
@@ -1074,7 +1066,6 @@
             }
         };
 
-        // Gallery Picker & Image Upload Helpers
         let selectedNewsImageUrl = '';
         let selectedLogoDataUrl = '';
 
@@ -1129,7 +1120,6 @@
                 statusEl.classList.replace('text-blue-600', 'text-green-600');
                 statusEl.innerText = 'ছবি সংযুক্ত হয়েছে! (ক্লাউডে আপলোড হচ্ছে...)';
 
-                // Upload to ImgBB in background so cloud URL is lightweight
                 const formData = new FormData();
                 formData.append('image', file);
                 fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData })
@@ -1176,7 +1166,6 @@
             showToast('ডিফল্ট লোগো নির্বাচিত হয়েছে। সেভ বাটনে চাপুন।');
         };
 
-        // Admin Post & Edit Modal Functions
         window.openAdminModal = function() {
             document.getElementById('post-news-form').reset();
             document.getElementById('edit-news-id').value = '';
@@ -1354,7 +1343,6 @@
             }
         };
 
-        // Settings & Analytics Dashboard
         window.openSettingsModal = function() {
             selectedLogoDataUrl = '';
             const active = getActiveSession();
@@ -1501,18 +1489,10 @@
             const defaultDate = new Date(news.timestamp || Date.now()).toLocaleDateString('bn-BD', {
                 day: 'numeric', month: 'long', year: 'numeric'
             });
-            let cleanSub = (news.content || '').replace(/\s+/g, ' ').trim();
-            const cleanTitle = (news.title || '').replace(/\s+/g, ' ').trim();
-            // Remove duplicate headline from the beginning of sub-headline
-            if (cleanSub.startsWith(cleanTitle)) {
-                cleanSub = cleanSub.slice(cleanTitle.length).replace(/^[:：\-\s।,]+/, '').trim();
-            }
-            const shortSub = cleanSub.length > 85 ? cleanSub.slice(0, 82).trim() + '...' : cleanSub;
 
             document.getElementById('pc-edit-date').value = defaultDate;
             document.getElementById('pc-edit-cat').value = news.category || 'সর্বশেষ';
             document.getElementById('pc-edit-title').value = news.title || '';
-            document.getElementById('pc-edit-sub').value = shortSub;
 
             document.getElementById('photocard-modal').classList.remove('hidden');
 
@@ -1540,15 +1520,13 @@
             const cardData = {
                 dateStr: document.getElementById('pc-edit-date').value.trim(),
                 category: document.getElementById('pc-edit-cat').value.trim() || 'সর্বশেষ',
-                title: document.getElementById('pc-edit-title').value.trim() || activeCardNews.title,
-                subhead: document.getElementById('pc-edit-sub').value.trim()
+                title: document.getElementById('pc-edit-title').value.trim() || activeCardNews.title
             };
 
             drawCardContent(ctx, cardData, activeCardImage);
         };
 
         function drawBangladeshMapWatermark(ctx, cx, cy, scale) {
-            // Stylized clean vector silhouette of Bangladesh map for subtle editorial watermark
             const pts = [
                 [-45, -145], [-20, -135], [-5, -110], [25, -105], [55, -115], [85, -95],
                 [95, -65], [70, -35], [65, 5], [85, 35], [95, 85], [80, 125],
@@ -1585,13 +1563,13 @@
             ctx.fillStyle = bgGrad;
             ctx.fillRect(0, 0, W, H);
 
-            // Subtle Decorative Top & Corner Accents (Light Blue & Red)
+            // Top Accent Stripe
             ctx.fillStyle = '#0f172a';
             ctx.fillRect(0, 0, W, 12);
             ctx.fillStyle = '#dc2626';
             ctx.fillRect(0, 0, 360, 12);
 
-            // Subtle Bangladesh Map Watermark in lower editorial area
+            // Subtle Bangladesh Map Watermark
             drawBangladeshMapWatermark(ctx, 880, 815, 1.55);
 
             // Outer Frame Border
@@ -1668,7 +1646,6 @@
             ctx.stroke();
             ctx.restore();
 
-            // Small Red Live Dot inside Date Badge
             ctx.fillStyle = '#dc2626';
             ctx.beginPath();
             ctx.arc(W - 310, 71, 6, 0, Math.PI * 2);
@@ -1679,7 +1656,6 @@
             ctx.textAlign = 'center';
             ctx.fillText(dateText, W - 185, 78);
 
-            // Category Tag below Date
             ctx.fillStyle = '#dc2626';
             ctx.beginPath();
             ctx.roundRect(W - 225, 104, 170, 32, 6);
@@ -1714,8 +1690,6 @@
 
             if (img) {
                 const imgRatio = img.width / img.height;
-                const frameRatio = frameW / frameH;
-                // Smart Fill for standard landscape photos so no dark sidebars appear, while keeping portrait photos uncropped
                 if (imgRatio >= 1.15 && imgRatio <= 2.1) {
                     const coverScale = Math.max(frameW / img.width, frameH / img.height);
                     const dw = img.width * coverScale;
@@ -1739,83 +1713,133 @@
             }
             ctx.restore();
 
-            // Crisp Dual Border (White inner + Crimson/Blue accent)
             ctx.strokeStyle = '#dc2626';
             ctx.lineWidth = 4;
             ctx.beginPath();
             ctx.roundRect(frameX - 10, frameY - 10, frameW + 20, frameH + 20, 18);
             ctx.stroke();
 
-            // 5. Large Two-Tone Editorial Headline (Red Key Words + Deep Navy/Black Body)
-            const headlineBottomY = drawTwoToneHeadline(ctx, data.title, 65, 700, W - 130, 185);
+            // 5. Balanced, Professional Two-Tone Editorial Headline with Safe Margins
+            drawTwoToneHeadline(ctx, data.title, W / 2, 702, W - 170, 275);
 
-            // 6. Sub-headline (Short News Summary)
-            if (data.subhead) {
-                drawSubHeadline(ctx, data.subhead, 65, headlineBottomY + 14, W - 130, 82);
-            }
-
-            // 7. Bottom Footer Bar: "বিস্তারিত পড়ুন জনপ্রবাহ২৪-এ"
+            // 6. Bottom Footer Bar: Social Icons (Left) + "বিস্তারিত কমেন্টে" (Center) + Domain (Right)
             const barY = H - 78;
             ctx.fillStyle = '#1e3a8a';
             ctx.beginPath();
             ctx.roundRect(55, barY, W - 110, 50, 12);
             ctx.fill();
 
-            // Left Red Accent Pill inside Footer Bar
+            // Left: Facebook & YouTube Icons + /jonoprobaho24
+            const fbX = 88;
+            const ytX = 122;
+            const iconY = barY + 25;
+
+            // Facebook Circle Badge
+            ctx.fillStyle = '#1877F2';
+            ctx.beginPath();
+            ctx.arc(fbX, iconY, 13, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('f', fbX, iconY + 6);
+
+            // YouTube Rounded Badge
+            ctx.fillStyle = '#FF0000';
+            ctx.beginPath();
+            ctx.roundRect(ytX - 15, iconY - 10, 30, 20, 5);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(ytX - 4, iconY - 5);
+            ctx.lineTo(ytX + 6, iconY);
+            ctx.lineTo(ytX - 4, iconY + 5);
+            ctx.closePath();
+            ctx.fill();
+
+            // Social Handle Text
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 19px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('/jonoprobaho24', ytX + 22, barY + 32);
+
+            // Center Red Accent Pill inside Footer Bar
+            const pillW = 280;
+            const pillX = (W - pillW) / 2 + 12;
             ctx.fillStyle = '#dc2626';
             ctx.beginPath();
-            ctx.roundRect(55, barY, 390, 50, [12, 0, 0, 12]);
+            ctx.roundRect(pillX, barY, pillW, 50, 10);
             ctx.fill();
 
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 23px "Hind Siliguri", sans-serif';
+            ctx.font = 'bold 24px "Hind Siliguri", sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('বিস্তারিত পড়ুন জনপ্রবাহ২৪-এ', 250, barY + 33);
+            ctx.fillText('বিস্তারিত কমেন্টে', pillX + pillW / 2, barY + 33);
 
+            // Right: Website URL
             ctx.fillStyle = '#e0f2fe';
-            ctx.font = '600 22px sans-serif';
+            ctx.font = '600 19px sans-serif';
             ctx.textAlign = 'right';
-            ctx.fillText('jonoprobaho24.com', W - 82, barY + 33);
+            ctx.fillText('jonoprobaho24.com', W - 75, barY + 32);
         }
 
-        function drawTwoToneHeadline(ctx, text, x, topY, maxWidth, maxBoxHeight) {
-            const words = text.trim().split(/\s+/);
-            // Highlight key words: first ~35% of words (or up to a colon ':') in Crimson Red, rest in Deep Navy
-            const colonIdx = words.findIndex(w => w.includes(':') || w.includes('ঃ'));
-            const redCount = colonIdx !== -1 ? colonIdx + 1 : Math.max(2, Math.min(4, Math.ceil(words.length * 0.35)));
+        function buildBalancedLines(ctx, words, redCount, maxWidth, fontSize) {
+            ctx.font = `bold ${fontSize}px "Tiro Bangla", "Hind Siliguri", serif`;
+            const spaceW = ctx.measureText(' ').width;
+            const totalTextW = words.reduce((acc, w, idx) => acc + ctx.measureText(w).width + (idx > 0 ? spaceW : 0), 0);
 
-            let fontSize = 48;
-            let lineHeight = 60;
+            // Fit naturally into 2 lines whenever possible; use 3 lines only for very long headlines
+            const targetLines = totalTextW <= maxWidth * 1.85 ? 2 : 3;
+            const idealLineW = Math.min(maxWidth, totalTextW / targetLines + spaceW * 1.5);
+
+            const lines = [];
+            let currentLine = [];
+            let currentW = 0;
+
+            for (let i = 0; i < words.length; i++) {
+                const wordObj = {
+                    word: words[i],
+                    color: i < redCount ? '#dc2626' : '#0f172a'
+                };
+                const wWidth = ctx.measureText(wordObj.word).width;
+                const addedW = currentLine.length === 0 ? wWidth : spaceW + wWidth;
+
+                const remainingWords = words.length - i;
+                const remainingLinesSlot = targetLines - lines.length;
+
+                if (currentLine.length > 0 && (currentW + addedW > maxWidth || (currentW + addedW > idealLineW && remainingWords >= remainingLinesSlot))) {
+                    lines.push({ words: currentLine, width: currentW });
+                    currentLine = [wordObj];
+                    currentW = wWidth;
+                } else {
+                    currentLine.push(wordObj);
+                    currentW += addedW;
+                }
+            }
+            if (currentLine.length > 0) {
+                lines.push({ words: currentLine, width: currentW });
+            }
+            return lines;
+        }
+
+        function drawTwoToneHeadline(ctx, text, centerX, topY, maxWidth, maxBoxHeight) {
+            const words = text.trim().split(/\s+/);
+            const colonIdx = words.findIndex(w => w.includes(':') || w.includes('ঃ'));
+            const redCount = colonIdx !== -1 ? colonIdx + 1 : Math.max(2, Math.min(3, Math.ceil(words.length * 0.32)));
+
+            const maxAllowedLines = words.length <= 10 ? 2 : 3;
+            let fontSize = words.length <= 10 ? 54 : 48;
+            let lineHeight = Math.round(fontSize * 1.35);
             let wrappedLines = [];
 
-            while (fontSize >= 28) {
-                ctx.font = `bold ${fontSize}px "Tiro Bangla", "Hind Siliguri", serif`;
-                lineHeight = Math.round(fontSize * 1.28);
-                wrappedLines = [];
-                let currentLine = [];
-                let currentLineWidth = 0;
-                const spaceW = ctx.measureText(' ').width;
+            while (fontSize >= 24) {
+                lineHeight = Math.round(fontSize * 1.35);
+                wrappedLines = buildBalancedLines(ctx, words, redCount, maxWidth, fontSize);
 
-                for (let i = 0; i < words.length; i++) {
-                    const wordObj = {
-                        word: words[i],
-                        color: i < redCount ? '#dc2626' : '#0f172a'
-                    };
-                    const wordW = ctx.measureText(wordObj.word).width;
-                    const addedW = currentLine.length === 0 ? wordW : spaceW + wordW;
-
-                    if (currentLineWidth + addedW > maxWidth && currentLine.length > 0) {
-                        wrappedLines.push(currentLine);
-                        currentLine = [wordObj];
-                        currentLineWidth = wordW;
-                    } else {
-                        currentLine.push(wordObj);
-                        currentLineWidth += addedW;
-                    }
-                }
-                if (currentLine.length > 0) wrappedLines.push(currentLine);
-
-                if (wrappedLines.length * lineHeight <= maxBoxHeight) break;
+                const fitsLineLimit = wrappedLines.length <= maxAllowedLines;
+                const fitsHeight = wrappedLines.length * lineHeight <= maxBoxHeight;
+                const fitsWidth = wrappedLines.every(l => l.width <= maxWidth);
+                if (fitsLineLimit && fitsHeight && fitsWidth) break;
                 fontSize -= 2;
             }
 
@@ -1823,49 +1847,20 @@
             ctx.textAlign = 'left';
             const spaceW = ctx.measureText(' ').width;
 
-            wrappedLines.forEach((lineWords, lineIdx) => {
-                let cursorX = x;
-                const drawY = topY + fontSize * 0.85 + lineIdx * lineHeight;
-                lineWords.forEach((item, wIdx) => {
+            const totalTextHeight = wrappedLines.length * lineHeight;
+            const verticalOffset = Math.max(0, (maxBoxHeight - totalTextHeight) / 2);
+
+            wrappedLines.forEach((lineObj, lineIdx) => {
+                let cursorX = centerX - lineObj.width / 2;
+                const drawY = topY + verticalOffset + fontSize * 0.88 + lineIdx * lineHeight;
+                lineObj.words.forEach((item) => {
                     ctx.fillStyle = item.color;
                     ctx.fillText(item.word, cursorX, drawY);
                     cursorX += ctx.measureText(item.word).width + spaceW;
                 });
             });
 
-            return topY + wrappedLines.length * lineHeight;
-        }
-
-        function drawSubHeadline(ctx, text, x, topY, maxWidth, maxBoxHeight) {
-            const words = text.trim().split(/\s+/);
-            ctx.font = '500 25px "Hind Siliguri", sans-serif';
-            ctx.fillStyle = '#334155';
-            ctx.textAlign = 'left';
-            const lineHeight = 34;
-            let line = '';
-            let lines = [];
-
-            for (let i = 0; i < words.length; i++) {
-                const test = line ? line + ' ' + words[i] : words[i];
-                if (ctx.measureText(test).width > maxWidth && line) {
-                    lines.push(line);
-                    line = words[i];
-                    if (lines.length === 2) break;
-                } else {
-                    line = test;
-                }
-            }
-            if (lines.length < 2 && line) lines.push(line);
-
-            // Subtle Left Red Vertical Accent beside Sub-headline
-            if (lines.length > 0) {
-                ctx.fillStyle = '#dc2626';
-                ctx.fillRect(x, topY + 4, 5, lines.length * lineHeight - 6);
-            }
-
-            lines.forEach((l, idx) => {
-                ctx.fillText(l, x + 16, topY + 26 + idx * lineHeight);
-            });
+            return topY + totalTextHeight;
         }
 
         window.closePhotoCardModal = function() { document.getElementById('photocard-modal').classList.add('hidden'); };
