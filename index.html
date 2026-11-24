@@ -8,6 +8,17 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="জনপ্রবাহ২৪">
     <title>জনপ্রবাহ২৪ | সত্যের পথে জনতার পাশে</title>
+
+    <!-- Facebook Open Graph (OG) Meta Tags -->
+    <meta property="og:title" content="জনপ্রবাহ২৪ | সত্যের পথে জনতার পাশে">
+    <meta property="og:description" content="সত্যের পথে জনতার পাশে — বস্তুনিষ্ঠ ও নিরপেক্ষ সংবাদ পরিবেশনে প্রতিশ্রুতিবদ্ধ একটি আধুনিক অনলাইন নিউজ পোর্টাল।">
+    <meta property="og:url" content="https://jonoprobaho24-news.github.io/jonoprobaho24/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="জনপ্রবাহ২৪">
+    <meta property="og:image" content="https://placehold.co/1200x630/0f172a/ffffff.png?text=%E0%A6%9C%E0%A6%A8%E0%A6%AA%E0%A7%8D%E0%A6%B0%E0%A6%AC%E0%A6%BE%E0%A6%B9%E0%A7%A8%E0%A7%AA+%7C+%E0%A6%B8%E0%A6%A4%E0%A7%8D%E0%A6%AF%E0%A7%87%E0%A6%B0+%E0%A6%AA%E0%A6%A5%E0%A7%87+%E0%A6%9C%E0%A6%A8%E0%A6%A4%E0%A6%BE%E0%A6%B0+%E0%A6%AA%E0%A6%BE%E0%A6%B6%E0%A7%87">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
     <link id="dynamic-favicon" rel="icon" type="image/png">
     <link id="dynamic-apple-icon" rel="apple-touch-icon">
     <link rel="manifest" href="manifest.json">
@@ -883,12 +894,10 @@
                 db = fsMod.getFirestore(app);
                 auth = authMod.getAuth(app);
 
-                // Start listening to public news & settings immediately for instant reader access
                 document.getElementById('db-status-badge').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> লাইভ ক্লাউড`;
                 listenToCloudSettings();
                 listenToNews();
 
-                // Also sign in anonymously in background for analytics/comments
                 authMod.signInAnonymously(auth).catch(() => {});
                 authMod.onAuthStateChanged(auth, (user) => {
                     currentUser = user;
