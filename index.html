@@ -659,6 +659,7 @@
 
         let savedAuthSession = null;
         let autoOpenedTargetId = null;
+        let autoOpenedTargetTitle = '';
 
         function getActiveSession() {
             try {
@@ -1169,6 +1170,7 @@
             const hash = window.location.hash || '';
             const params = new URLSearchParams(window.location.search || '');
             let targetId = '';
+            let targetTitle = '';
 
             if (params.get('n')) {
                 targetId = params.get('n').trim();
@@ -1178,10 +1180,15 @@
                 targetId = decodeURIComponent(hash.replace('#news=', '')).trim();
             }
 
-            if (!targetId || autoOpenedTargetId === targetId) return;
+            if (params.get('t')) {
+                targetTitle = decodeURIComponent(params.get('t')).trim();
+            }
 
-            let exists = allNews.find(n => n.id === targetId);
-            if (!exists && !targetId.startsWith('sample-') && !targetId.startsWith('local-')) {
+            if (!targetId && !targetTitle) return;
+            if (targetId && autoOpenedTargetId === targetId) return;
+
+            let exists = targetId ? allNews.find(n => n.id === targetId) : null;
+            if (!exists && targetId && !targetId.startsWith('sample-') && !targetId.startsWith('local-')) {
                 exists = await fetchSingleArticleDirect(targetId);
                 if (!exists && db && fbOps) {
                     try {
@@ -1198,8 +1205,14 @@
             }
 
             if (exists) {
-                autoOpenedTargetId = targetId;
-                openReadModal(targetId);
+                autoOpenedTargetId = exists.id;
+                openReadModal(exists.id);
+            } else if (targetTitle && allNews.length > 0 && autoOpenedTargetTitle !== targetTitle) {
+                const matched = allNews.find(n => (n.title || '').trim().includes(targetTitle.slice(0, 20)));
+                if (matched) {
+                    autoOpenedTargetTitle = targetTitle;
+                    openReadModal(matched.id);
+                }
             }
         }
 
