@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,7 @@
     <title>জনপ্রবাহ২৪ | সত্যের পথে জনতার পাশে</title>
     <link id="dynamic-favicon" rel="icon" type="image/png">
     <link id="dynamic-apple-icon" rel="apple-touch-icon">
-    <link id="dynamic-manifest" rel="manifest">
+    <link rel="manifest" href="manifest.json">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -51,27 +51,6 @@
         .animate-ticker:hover {
             animation-play-state: paused;
         }
-        @keyframes nationalWave {
-            0%, 100% { transform: translateX(-8%) scale(1); }
-            50% { transform: translateX(8%) scale(1.04); }
-        }
-        @keyframes mapFloat {
-            0%, 100% { transform: translate(0px, 0px) rotate(0deg); }
-            50% { transform: translate(18px, -4px) rotate(1.5deg); }
-        }
-        @keyframes shineSweep {
-            0% { transform: translateX(-120%) skewX(-20deg); }
-            100% { transform: translateX(260%) skewX(-20deg); }
-        }
-        .animate-national-wave {
-            animation: nationalWave 9s ease-in-out infinite;
-        }
-        .animate-map-float {
-            animation: mapFloat 11s ease-in-out infinite;
-        }
-        .animate-shine-sweep {
-            animation: shineSweep 6s ease-in-out infinite;
-        }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 3px; }
@@ -79,7 +58,6 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
     <script>
-        // Generate Colored Jonoprobaho24 App Icon & PWA Manifest Automatically
         (function setupPWAAndColoredIcon() {
             try {
                 const c = document.createElement('canvas');
@@ -87,11 +65,9 @@
                 c.height = 512;
                 const ctx = c.getContext('2d');
 
-                // White App Background with subtle border
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(0, 0, 512, 512);
 
-                // Outer Crimson Ring
                 ctx.beginPath();
                 ctx.arc(256, 256, 226, 0, Math.PI * 2);
                 ctx.fillStyle = '#ffffff';
@@ -100,29 +76,24 @@
                 ctx.strokeStyle = '#dc2626';
                 ctx.stroke();
 
-                // Inner Black Ring
                 ctx.beginPath();
                 ctx.arc(256, 256, 200, 0, Math.PI * 2);
                 ctx.lineWidth = 10;
                 ctx.strokeStyle = '#111827';
                 ctx.stroke();
 
-                // Slogan Text
                 ctx.fillStyle = '#111827';
                 ctx.font = 'bold 26px sans-serif';
                 ctx.textAlign = 'center';
                 ctx.fillText('সত্যের পথে জনতার পাশে', 256, 138);
 
-                // Red Divider
                 ctx.fillStyle = '#dc2626';
                 ctx.fillRect(160, 152, 192, 7);
 
-                // Giant "জ"
                 ctx.fillStyle = '#111827';
                 ctx.font = '900 185px serif';
                 ctx.fillText('জ', 256, 315);
 
-                // "জনপ্রবাহ24"
                 ctx.font = '900 44px sans-serif';
                 ctx.fillStyle = '#111827';
                 ctx.fillText('জনপ্রবাহ', 224, 385);
@@ -135,26 +106,8 @@
                 if (fav) fav.href = iconDataUrl;
                 if (apple) apple.href = iconDataUrl;
 
-                const manifestObj = {
-                    name: "জনপ্রবাহ২৪ | সত্যের পথে জনতার পাশে",
-                    short_name: "জনপ্রবাহ২৪",
-                    start_url: window.location.href.split('#')[0],
-                    display: "standalone",
-                    background_color: "#ffffff",
-                    theme_color: "#dc2626",
-                    icons: [
-                        { src: iconDataUrl, sizes: "192x192", type: "image/png" },
-                        { src: iconDataUrl, sizes: "512x512", type: "image/png" }
-                    ]
-                };
-                const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
-                const manifestEl = document.getElementById('dynamic-manifest');
-                if (manifestEl) manifestEl.href = URL.createObjectURL(manifestBlob);
-
                 if ('serviceWorker' in navigator) {
-                    const swCode = "self.addEventListener('fetch', function(e) {});";
-                    const swBlob = new Blob([swCode], { type: 'application/javascript' });
-                    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+                    navigator.serviceWorker.register('./sw.js').catch(() => {});
                 }
             } catch (e) {}
         })();
@@ -192,7 +145,6 @@
 
     <!-- Main Header & Dynamic Brand Logo -->
     <header class="bg-gradient-to-r from-slate-950 via-blue-950 to-slate-950 shadow-lg py-3.5 px-4 border-b-2 border-red-600 sticky top-0 z-40 relative overflow-hidden">
-        <!-- TV News Broadcast Rotating World Map & Satellite Canvas -->
         <canvas id="header-world-globe-canvas" class="pointer-events-none absolute inset-0 w-full h-full opacity-90"></canvas>
 
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3 relative z-10">
@@ -263,7 +215,6 @@
 
     <!-- Auto Daily Greeting, Prayer & Sehri-Iftar Schedule Strip -->
     <section class="max-w-7xl w-full mx-auto px-4 pt-4">
-        <!-- Optional Special Event / Eid Banner (Auto or Manual from Settings) -->
         <div id="special-event-banner" class="hidden mb-3 bg-gradient-to-r from-red-700 via-amber-600 to-red-800 text-white p-3.5 rounded-2xl shadow-md border border-amber-300/40 flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-3">
                 <span class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl shrink-0">🌙</span>
@@ -277,9 +228,7 @@
             </button>
         </div>
 
-        <!-- Daily Auto Greeting + Live Prayer & Ramadan Timings -->
         <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-3.5 sm:p-4 grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-center">
-            <!-- Left: Time-Aware Auto Greeting (Good Morning / Good Night) -->
             <div class="lg:col-span-5 flex items-center justify-between gap-3 bg-gradient-to-r from-slate-900 to-red-950 text-white p-3.5 rounded-xl">
                 <div class="flex items-center gap-3">
                     <div id="auto-greeting-icon" class="w-11 h-11 rounded-full bg-amber-400/20 border border-amber-300/40 flex items-center justify-center text-2xl shrink-0">☀️</div>
@@ -297,7 +246,6 @@
                 </button>
             </div>
 
-            <!-- Right: Daily Prayer & Sehri-Iftar Timings (Bangladesh / Barishal-Dhaka) -->
             <div class="lg:col-span-7 bg-emerald-50/70 border border-emerald-200 rounded-xl p-3">
                 <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
                     <span class="text-xs font-extrabold text-emerald-900 flex items-center gap-1.5">
@@ -455,7 +403,6 @@
                     </div>
                 </div>
                 
-                <!-- Cloud Gallery Image Upload -->
                 <div>
                     <label class="block text-sm font-bold text-gray-800 mb-1.5"><i class="fas fa-image text-red-600 mr-1"></i> সংবাদের ছবি (গ্যালারি থেকে সিলেক্ট করুন)</label>
                     <input type="file" id="news-image-file" accept="image/*" onchange="previewSelectedImage(event)" class="hidden">
@@ -507,7 +454,6 @@
                 </button>
             </div>
             <form onsubmit="savePortalSettings(event)" class="space-y-4">
-                <!-- Live Website & News Analytics Dashboard -->
                 <div class="bg-gradient-to-br from-gray-900 to-red-950 text-white p-4 rounded-xl shadow-md border border-red-800/50 space-y-3">
                     <div class="flex items-center justify-between border-b border-white/15 pb-2">
                         <h4 class="text-sm font-bold flex items-center gap-2 text-amber-300">
@@ -545,7 +491,6 @@
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600">
                 </div>
 
-                <!-- Special Event / Eid Banner Auto Controller -->
                 <div class="bg-amber-50 p-3.5 rounded-xl border border-amber-200 space-y-2.5">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-extrabold text-amber-900 flex items-center gap-1.5">
@@ -559,7 +504,6 @@
                     <input type="text" id="settings-event-sub" placeholder="শুভেচ্ছা বার্তা লিখুন..." class="w-full px-2.5 py-1.5 border border-amber-300 rounded-lg text-xs bg-white">
                 </div>
 
-                <!-- Logo / Profile Photo Upload -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">পোর্টালের লোগো / প্রোফাইল ছবি পরিবর্তন করুন</label>
                     <input type="file" id="settings-logo-file" accept="image/*" onchange="previewLogoImage(event)" class="hidden">
@@ -605,7 +549,6 @@
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
                 </div>
 
-                <!-- Sub-Admin / Reporter Management Section -->
                 <div class="bg-gray-50 p-3.5 rounded-lg border border-gray-200 space-y-3">
                     <div class="flex items-center justify-between">
                         <h4 class="text-sm font-bold text-black flex items-center gap-1.5">
@@ -652,7 +595,6 @@
                 <canvas id="photocard-canvas" class="max-w-full h-auto rounded-lg shadow-lg" style="max-height: 360px;"></canvas>
             </div>
 
-            <!-- Live Editable Fields for Each News Card -->
             <div id="pc-news-editor-fields" class="bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-2.5 mb-3 text-xs">
                 <div>
                     <label class="block font-bold text-gray-700 mb-1">তারিখ পরিবর্তন:</label>
@@ -690,6 +632,7 @@
             appId: "1:893273342378:web:91d803ada0fc7649cdebd3"
         };
         const IMGBB_API_KEY = "83d9e310c0816f055a8d15e6bf44a1f2";
+        const OFFICIAL_PORTAL_URL = "https://jonoprobaho24-news.github.io/jonoprobaho24/";
 
         let portalSettings = {
             adminPass: "2424",
@@ -715,6 +658,7 @@
         };
 
         let savedAuthSession = null;
+        let autoOpenedTargetId = null;
 
         function getActiveSession() {
             try {
@@ -818,7 +762,6 @@
             }
         }
 
-        // Auto Time-Aware Daily Greeting (Good Morning / Good Afternoon / Good Night)
         function updateAutoDailyGreeting() {
             const hour = new Date().getHours();
             const titleEl = document.getElementById('auto-greeting-title');
@@ -844,7 +787,6 @@
             }
         }
 
-        // Fetch Daily Prayer & Sehri-Iftar Times Automatically (Aladhan API for Dhaka/Bangladesh)
         async function fetchDailyPrayerTimes() {
             try {
                 const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Dhaka&country=Bangladesh&method=1');
@@ -939,15 +881,18 @@
                 const app = appMod.initializeApp(firebaseConfig);
                 db = fsMod.getFirestore(app);
                 auth = authMod.getAuth(app);
-                await authMod.signInAnonymously(auth);
 
+                // Start listening to public news & settings immediately for instant reader access
+                document.getElementById('db-status-badge').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> লাইভ ক্লাউড`;
+                listenToCloudSettings();
+                listenToNews();
+
+                // Also sign in anonymously in background for analytics/comments
+                authMod.signInAnonymously(auth).catch(() => {});
                 authMod.onAuthStateChanged(auth, (user) => {
                     currentUser = user;
                     if (user) {
-                        document.getElementById('db-status-badge').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> লাইভ ক্লাউড`;
                         trackAndListenSiteVisitors();
-                        listenToCloudSettings();
-                        listenToNews();
                     }
                 });
             } catch (error) {
@@ -980,7 +925,7 @@
         }
 
         async function trackAndListenSiteVisitors() {
-            if (!db || !currentUser || !fbOps) return;
+            if (!db || !fbOps) return;
             const statsRef = fbOps.doc(db, 'jp24_settings', 'site_analytics');
 
             fbOps.onSnapshot(statsRef, (snap) => {
@@ -1124,7 +1069,7 @@
                                 <button onclick="generatePhotoCard('${leadNews.id}')" class="bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 px-2.5 py-1 rounded-lg font-bold transition">
                                     <i class="fas fa-image mr-1"></i>ফটো কার্ড
                                 </button>
-                                <button onclick="copyExactNewsLink('${leadNews.id}', '${escapeQuote(leadNews.title)}')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1 rounded-lg font-bold transition">
+                                <button onclick="copyExactNewsLink('${leadNews.id}')" title="সরাসরি লিংক কপি করুন" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1 rounded-lg font-bold transition">
                                     <i class="fas fa-link"></i>
                                 </button>
                             </div>
@@ -1144,7 +1089,10 @@
                                 <h4 onclick="openReadModal('${item.id}')" class="font-editorial font-bold text-gray-900 hover:text-red-600 text-base leading-snug line-clamp-2 cursor-pointer mt-0.5">${item.title}</h4>
                                 <div class="flex items-center justify-between mt-2 text-[11px] text-gray-500">
                                     <span><i class="far fa-eye mr-1"></i>${toBnNum(item.views || 0)} • <i class="fas fa-heart text-red-500 mr-0.5"></i>${toBnNum(item.likes || 0)}</span>
-                                    <button onclick="generatePhotoCard('${item.id}')" class="text-red-600 font-bold hover:underline">ফটো কার্ড</button>
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="generatePhotoCard('${item.id}')" class="text-red-600 font-bold hover:underline">ফটো কার্ড</button>
+                                        <button onclick="copyExactNewsLink('${item.id}')" title="লিংক কপি" class="text-gray-600 hover:text-black"><i class="fas fa-link"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1170,7 +1118,7 @@
                                 <span><i class="far fa-eye text-blue-600 mr-0.5"></i>${toBnNum(item.views || 0)} • <i class="fas fa-heart text-red-500 mr-0.5"></i>${toBnNum(item.likes || 0)} • <i class="far fa-comment text-green-600 mr-0.5"></i>${toBnNum((item.comments || []).length)}</span>
                                 <div class="flex items-center gap-1.5">
                                     <button onclick="generatePhotoCard('${item.id}')" class="bg-red-50 hover:bg-red-600 text-red-600 hover:text-white px-2 py-1 rounded font-bold transition">ফটো কার্ড</button>
-                                    <button onclick="copyExactNewsLink('${item.id}', '${escapeQuote(item.title)}')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded font-bold"><i class="fas fa-share-alt"></i></button>
+                                    <button onclick="copyExactNewsLink('${item.id}')" title="সরাসরি লিংক কপি করুন" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded font-bold"><i class="fas fa-link"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -1179,24 +1127,91 @@
             });
         }
 
-        function escapeQuote(str) {
-            return String(str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        function getPortalBaseUrl() {
+            const currentHref = window.location.href.split('#')[0].split('?')[0];
+            if (currentHref.startsWith('http') && currentHref.includes('jonoprobaho24')) {
+                return currentHref.endsWith('/') ? currentHref : currentHref + '/';
+            }
+            return OFFICIAL_PORTAL_URL;
         }
 
-        function checkUrlHashForArticle() {
-            const hash = window.location.hash;
-            if (hash && hash.startsWith('#news=')) {
-                const targetId = hash.replace('#news=', '');
-                const exists = allNews.find(n => n.id === targetId);
-                if (exists) {
-                    openReadModal(targetId);
-                }
+        function getExactArticleUrl(id) {
+            return `${getPortalBaseUrl()}?n=${encodeURIComponent(id)}`;
+        }
+
+        async function fetchSingleArticleDirect(targetId) {
+            try {
+                const url = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/jp24_articles/${encodeURIComponent(targetId)}`;
+                const res = await fetch(url);
+                if (!res.ok) return null;
+                const docData = await res.json();
+                if (!docData || !docData.fields) return null;
+                const f = docData.fields;
+                return {
+                    id: targetId,
+                    title: f.title?.stringValue || '',
+                    category: f.category?.stringValue || 'জাতীয়',
+                    reporter: f.reporter?.stringValue || 'নিজস্ব প্রতিবেদক',
+                    image: f.image?.stringValue || 'https://placehold.co/800x450/111827/ffffff?text=Jonoprobaho24',
+                    content: f.content?.stringValue || '',
+                    isBreaking: Boolean(f.isBreaking?.booleanValue),
+                    views: Number(f.views?.integerValue || 0),
+                    likes: Number(f.likes?.integerValue || 0),
+                    comments: [],
+                    timestamp: Number(f.timestamp?.integerValue || Date.now())
+                };
+            } catch (e) {
+                return null;
             }
         }
+
+        async function checkUrlHashForArticle() {
+            const hash = window.location.hash || '';
+            const params = new URLSearchParams(window.location.search || '');
+            let targetId = '';
+
+            if (params.get('n')) {
+                targetId = params.get('n').trim();
+            } else if (params.get('news')) {
+                targetId = params.get('news').trim();
+            } else if (hash.startsWith('#news=')) {
+                targetId = decodeURIComponent(hash.replace('#news=', '')).trim();
+            }
+
+            if (!targetId || autoOpenedTargetId === targetId) return;
+
+            let exists = allNews.find(n => n.id === targetId);
+            if (!exists && !targetId.startsWith('sample-') && !targetId.startsWith('local-')) {
+                exists = await fetchSingleArticleDirect(targetId);
+                if (!exists && db && fbOps) {
+                    try {
+                        const snap = await fbOps.getDoc(fbOps.doc(db, 'jp24_articles', targetId));
+                        if (snap.exists()) {
+                            exists = { id: snap.id, ...snap.data() };
+                        }
+                    } catch (e) {}
+                }
+                if (exists && !allNews.some(n => n.id === exists.id)) {
+                    allNews.unshift(exists);
+                    renderNews();
+                }
+            }
+
+            if (exists) {
+                autoOpenedTargetId = targetId;
+                openReadModal(targetId);
+            }
+        }
+
+        window.addEventListener('hashchange', checkUrlHashForArticle);
 
         window.openReadModal = async function(id) {
             const news = allNews.find(n => n.id === id);
             if (!news) return;
+
+            try {
+                history.replaceState(null, '', `?n=${encodeURIComponent(id)}`);
+            } catch (e) {}
 
             const viewedKey = `jp24_viewed_${id}`;
             if (!sessionStorage.getItem(viewedKey)) {
@@ -1211,8 +1226,8 @@
                 }
             }
 
-            const baseUrl = window.location.href.split('#')[0];
-            const shareUrl = encodeURIComponent(`${baseUrl}#news=${id}`);
+            const exactArticleUrl = getExactArticleUrl(id);
+            const shareUrl = encodeURIComponent(exactArticleUrl);
             const shareText = encodeURIComponent(news.title);
             const comments = Array.isArray(news.comments) ? news.comments : [];
             const isLiked = localStorage.getItem(`jp24_liked_${id}`) === '1';
@@ -1257,6 +1272,17 @@
                         ${news.content}
                     </div>
 
+                    <!-- Direct Copyable Article URL Box -->
+                    <div class="bg-blue-50/70 border border-blue-200 rounded-xl p-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+                        <div class="min-w-0 flex-grow">
+                            <span class="text-[11px] font-bold text-blue-900 block mb-0.5"><i class="fas fa-link mr-1"></i> এই সংবাদের সরাসরি লিংক (ফেসবুক পেজ বা পোস্টে শেয়ারের জন্য):</span>
+                            <input type="text" readonly value="${exactArticleUrl}" onclick="this.select()" class="w-full text-xs bg-white border border-blue-200 rounded-lg px-2.5 py-1.5 text-gray-800 font-mono select-all">
+                        </div>
+                        <button onclick="copyExactNewsLink('${news.id}')" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg text-xs font-bold shrink-0 shadow-sm transition">
+                            <i class="fas fa-copy mr-1"></i> শুধু লিংক কপি
+                        </button>
+                    </div>
+
                     <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-200 flex flex-wrap items-center justify-between gap-3">
                         <div class="flex items-center gap-2">
                             <button onclick="toggleLikeNews('${news.id}')" class="${isLiked ? 'bg-red-600 text-white' : 'bg-white text-red-600 border border-red-200 hover:bg-red-50'} px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1.5">
@@ -1273,7 +1299,7 @@
                             <a href="https://api.whatsapp.com/send?text=${shareText}%20${shareUrl}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1">
                                 <i class="fab fa-whatsapp"></i> হোয়াটসঅ্যাপ
                             </a>
-                            <button onclick="copyExactNewsLink('${news.id}', '${escapeQuote(news.title)}')" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1">
+                            <button onclick="copyExactNewsLink('${news.id}')" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1">
                                 <i class="fas fa-copy"></i> লিংক কপি
                             </button>
                         </div>
@@ -1300,8 +1326,11 @@
 
         window.closeReadModal = function() {
             document.getElementById('read-modal').classList.add('hidden');
-            if (window.location.hash.startsWith('#news=')) {
-                history.replaceState(null, null, ' ');
+            autoOpenedTargetId = null;
+            if (window.location.search.includes('n=') || window.location.hash.startsWith('#news=')) {
+                try {
+                    history.replaceState(null, '', window.location.pathname);
+                } catch (e) {}
             }
         };
 
@@ -1839,7 +1868,6 @@
             showToast('পোর্টালের সকল সেটিংস সফলভাবে সেভ হয়েছে!');
         };
 
-        // Auto Daily Greeting / Prayer / Night / Eid Photo Card Generator (1:1)
         window.openAutoDailyCard = function(type) {
             activeCardNews = null;
             document.getElementById('pc-news-editor-fields').classList.add('hidden');
@@ -1854,19 +1882,19 @@
             const W = 1080;
             const H = 1080;
 
-            let bg1 = '#0f172a', bg2 = '#1e3a8a', accent = '#f59e0b', badge = 'শুভ সকাল', heading = 'শুভ সকাল, বাংলাদেশ!', sub = 'নতুন সকালের আলোয় আপনার দিনটি হোক সুন্দর, সফল ও কল্যাণময়।', emoji = '☀️';
+            let bg1 = '#0f172a', bg2 = '#1e3a8a', accent = '#f59e0b', heading = 'শুভ সকাল, বাংলাদেশ!', sub = 'নতুন সকালের আলোয় আপনার দিনটি হোক সুন্দর, সফল ও কল্যাণময়।', emoji = '☀️';
             if (type === 'night') {
-                bg1 = '#020617'; bg2 = '#1e1b4b'; accent = '#38bdf8'; badge = 'শুভরাত্রি';
+                bg1 = '#020617'; bg2 = '#1e1b4b'; accent = '#38bdf8';
                 heading = 'শুভরাত্রি, বাংলাদেশ!';
                 sub = 'সারাদিনের ক্লান্তি শেষে প্রশান্তির ঘুম ও সুন্দর আগামীকালের প্রত্যাশা রইলো।';
                 emoji = '🌙';
             } else if (type === 'prayer') {
-                bg1 = '#064e3b'; bg2 = '#022c22'; accent = '#fbbf24'; badge = 'নামাজ ও সেহরি-ইফতার';
+                bg1 = '#064e3b'; bg2 = '#022c22'; accent = '#fbbf24';
                 heading = 'আজকের নামাজ ও সেহরি-ইফতারের সময়সূচী';
                 sub = dailyPrayerTimes.city;
                 emoji = '🕌';
             } else if (type === 'eid') {
-                bg1 = '#7f1d1d'; bg2 = '#450a0a'; accent = '#fbbf24'; badge = 'বিশেষ শুভেচ্ছা';
+                bg1 = '#7f1d1d'; bg2 = '#450a0a'; accent = '#fbbf24';
                 heading = portalSettings.eventTitle || 'ঈদ মোবারক!';
                 sub = portalSettings.eventSub || 'সত্যের পথে জনতার পাশে — আপনার ও আপনার পরিবারের আনন্দময় সময় কামনা করছি।';
                 emoji = '🌙✨';
@@ -1964,7 +1992,6 @@
             ctx.fillText('fb & yt: /jonoprobaho24   |   jonoprobaho24.com', W / 2, barY + 34);
         };
 
-        // Photo Card Generator (Jonokontho Calligraphy Masthead Centered + Clean International 1:1 Design)
         let activeCardNews = null;
         let activeCardImage = null;
 
@@ -2344,17 +2371,23 @@
             showToast('ফটো কার্ড ডাউনলোড হয়েছে!');
         };
 
-        window.copyExactNewsLink = function(id, title) {
-            const baseUrl = window.location.href.split('#')[0];
-            const exactUrl = `${baseUrl}#news=${id}`;
-            const textToCopy = `${title}\nবিস্তারিত পড়ুন: ${exactUrl}`;
-            const tempInput = document.createElement('textarea');
-            tempInput.value = textToCopy;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-            showToast('সংবাদের সরাসরি লিংক কপি হয়েছে!');
+        window.copyExactNewsLink = async function(id) {
+            const exactUrl = getExactArticleUrl(id);
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(exactUrl);
+                } else {
+                    const tempInput = document.createElement('textarea');
+                    tempInput.value = exactUrl;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                }
+                showToast('সরাসরি সংবাদের লিংক কপি হয়েছে! এখন ফেসবুক পেজে পেস্ট করুন।');
+            } catch (e) {
+                showToast('লিংক কপি হয়েছে!');
+            }
         };
 
         function formatTime(timestamp) {
@@ -2374,34 +2407,26 @@
             setTimeout(() => { toast.classList.add('translate-y-24', 'opacity-0'); }, 3000);
         }
 
-        // TV Broadcast Rotating 3D World Globe & News Studio Animation
         function startHeaderWorldGlobeAnimation() {
             const canvas = document.getElementById('header-world-globe-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             let rot = 0;
 
-            // Simplified World Continents (lon, lat in degrees)
             const continents = [
-                // North America
                 [[-130, 55], [-100, 65], [-75, 55], [-80, 30], [-95, 20], [-115, 32], [-125, 48]],
-                // South America
                 [[-75, 10], [-50, 0], [-38, -15], [-55, -38], [-70, -52], [-78, -20], [-80, 0]],
-                // Europe & Asia (Eurasia)
                 [[-10, 38], [10, 55], [40, 65], [90, 70], [140, 62], [135, 35], [115, 22], [95, 15], [88, 24], [75, 10], [60, 25], [35, 32], [25, 42], [0, 45]],
-                // Africa
                 [[-15, 32], [15, 34], [35, 28], [48, 10], [38, -18], [20, -34], [12, -15], [5, 5], [-15, 12]],
-                // Australia
                 [[115, -22], [135, -14], [152, -25], [146, -38], [120, -34]]
             ];
 
-            // Major Broadcast Hub Cities (Dhaka highlighted in Red)
             const hubs = [
-                { lon: 90.4, lat: 23.8, bd: true },  // Dhaka, Bangladesh
-                { lon: -0.1, lat: 51.5, bd: false }, // London
-                { lon: -74.0, lat: 40.7, bd: false },// New York
-                { lon: 55.3, lat: 25.2, bd: false }, // Dubai
-                { lon: 139.7, lat: 35.7, bd: false } // Tokyo
+                { lon: 90.4, lat: 23.8, bd: true },
+                { lon: -0.1, lat: 51.5, bd: false },
+                { lon: -74.0, lat: 40.7, bd: false },
+                { lon: 55.3, lat: 25.2, bd: false },
+                { lon: 139.7, lat: 35.7, bd: false }
             ];
 
             function renderGlobe() {
@@ -2415,14 +2440,12 @@
                 const H = canvas.height;
                 ctx.clearRect(0, 0, W, H);
 
-                // Subtle Broadcast Studio Grid Lines
                 ctx.strokeStyle = 'rgba(56, 189, 248, 0.08)';
                 ctx.lineWidth = 1;
                 for (let x = 0; x < W; x += 48) {
                     ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
                 }
 
-                // Flowing World Map Strip Across Background
                 const mapOffset = (rot * 45) % W;
                 ctx.save();
                 ctx.fillStyle = 'rgba(56, 189, 248, 0.11)';
@@ -2444,12 +2467,10 @@
                 });
                 ctx.restore();
 
-                // Center-Right 3D Rotating Wireframe World Globe
                 const cx = W * 0.56;
                 const cy = H * 0.52;
                 const R = Math.min(H * 0.85, 88);
 
-                // Globe Outer Glow
                 const glow = ctx.createRadialGradient(cx, cy, R * 0.2, cx, cy, R * 1.35);
                 glow.addColorStop(0, 'rgba(14, 165, 233, 0.28)');
                 glow.addColorStop(0.7, 'rgba(220, 38, 38, 0.14)');
@@ -2459,7 +2480,6 @@
                 ctx.arc(cx, cy, R * 1.35, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Longitude & Latitude Wireframe Rings
                 ctx.strokeStyle = 'rgba(125, 211, 252, 0.25)';
                 ctx.lineWidth = 1;
                 for (let i = 0; i < 6; i++) {
@@ -2477,7 +2497,6 @@
                     ctx.stroke();
                 });
 
-                // 3D Projected Rotating Continents on Globe
                 continents.forEach(poly => {
                     ctx.beginPath();
                     let visiblePts = 0;
@@ -2501,7 +2520,6 @@
                     }
                 });
 
-                // Tilted Satellite Orbit Ring & Moving Signal Dot
                 ctx.save();
                 ctx.translate(cx, cy);
                 ctx.rotate(-0.32);
@@ -2519,7 +2537,6 @@
                 ctx.fill();
                 ctx.restore();
 
-                // Broadcast City Nodes & Dhaka Red Pulse
                 hubs.forEach(h => {
                     const lambda = (h.lon * Math.PI) / 180 + rot;
                     const phi = (h.lat * Math.PI) / 180;
