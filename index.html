@@ -1207,6 +1207,9 @@
             if (exists) {
                 autoOpenedTargetId = exists.id;
                 openReadModal(exists.id);
+                try {
+                    history.replaceState(null, '', `?n=${encodeURIComponent(exists.id)}`);
+                } catch (e) {}
             } else if (targetTitle && allNews.length > 0 && autoOpenedTargetTitle !== targetTitle) {
                 const matched = allNews.find(n => (n.title || '').trim().includes(targetTitle.slice(0, 20)));
                 if (matched) {
@@ -1288,11 +1291,11 @@
                     <!-- Direct Copyable Article URL Box -->
                     <div class="bg-blue-50/70 border border-blue-200 rounded-xl p-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
                         <div class="min-w-0 flex-grow">
-                            <span class="text-[11px] font-bold text-blue-900 block mb-0.5"><i class="fas fa-link mr-1"></i> এই সংবাদের সরাসরি লিংক (ফেসবুক পেজ বা পোস্টে শেয়ারের জন্য):</span>
-                            <input type="text" readonly value="${exactArticleUrl}" onclick="this.select()" class="w-full text-xs bg-white border border-blue-200 rounded-lg px-2.5 py-1.5 text-gray-800 font-mono select-all">
+                            <span class="text-[11px] font-bold text-blue-900 block mb-0.5"><i class="fas fa-link mr-1"></i> ফেসবুক পেজ ও কমেন্টে দেওয়ার উপযোগী লিংক:</span>
+                            <input type="text" id="article-direct-url-input" readonly value="${exactArticleUrl}" onclick="this.select()" class="w-full text-xs bg-white border border-blue-200 rounded-lg px-2.5 py-1.5 text-gray-800 font-mono select-all">
                         </div>
                         <button onclick="copyExactNewsLink('${news.id}')" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg text-xs font-bold shrink-0 shadow-sm transition">
-                            <i class="fas fa-copy mr-1"></i> শুধু লিংক কপি
+                            <i class="fas fa-copy mr-1"></i> ফেসবুক লিংক কপি
                         </button>
                     </div>
 
@@ -2386,20 +2389,35 @@
 
         window.copyExactNewsLink = async function(id) {
             const exactUrl = getExactArticleUrl(id);
+            let finalCopyUrl = exactUrl;
+            showToast('ফেসবুক-বান্ধব ছোট লিংক তৈরি হচ্ছে...');
+
+            try {
+                const res = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(exactUrl)}`);
+                if (res.ok) {
+                    const shortText = (await res.text()).trim();
+                    if (shortText.startsWith('http')) {
+                        finalCopyUrl = shortText;
+                        const inputBox = document.getElementById('article-direct-url-input');
+                        if (inputBox) inputBox.value = finalCopyUrl;
+                    }
+                }
+            } catch (err) {}
+
             try {
                 if (navigator.clipboard && window.isSecureContext) {
-                    await navigator.clipboard.writeText(exactUrl);
+                    await navigator.clipboard.writeText(finalCopyUrl);
                 } else {
                     const tempInput = document.createElement('textarea');
-                    tempInput.value = exactUrl;
+                    tempInput.value = finalCopyUrl;
                     document.body.appendChild(tempInput);
                     tempInput.select();
                     document.execCommand('copy');
                     document.body.removeChild(tempInput);
                 }
-                showToast('সরাসরি সংবাদের লিংক কপি হয়েছে! এখন ফেসবুক পেজে পেস্ট করুন।');
+                showToast('ফেসবুক লিংক কপি হয়েছে! এখন পেজ বা কমেন্টে পেস্ট করুন।');
             } catch (e) {
-                showToast('লিংক কপি হয়েছে!');
+                showToast('লিংক কপি হয়েছে: ' + finalCopyUrl);
             }
         };
 
